@@ -1,0 +1,192 @@
+@import "tailwindcss";
+@theme inline {
+  /* Marca — extraída da logo oficial Corredor 61 e dos mockups */
+  --color-navy: #101f3c;
+  --color-navy-2: #0f2744;
+  --color-blackish: #111111;
+  --color-cream: #f4f0e4;
+  --color-canvas: #e8e5dd;
+  --color-paper: #fdfcf8;
+  --color-white: #ffffff;
+  --color-gold: #c9a044;
+  --color-gold-ink: #b8912f;
+  --color-body: #1a1a1a;
+  --color-body-2: #22252c;
+  --color-line: #dcd7c9;
+  --color-line-2: #ebe5d7;
+
+  --font-sans: var(--font-archivo);
+  --font-serif: var(--font-source-serif);
+  --font-mono: var(--font-plex-mono);
+}
+
+@layer base {
+  :root {
+    /* altura do cabeçalho fixo (mobile: faixa da logo) */
+    --header-h: 78px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --header-h: 192px;
+    }
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-body);
+    font-family: var(--font-sans), "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-sans), "Segoe UI", sans-serif;
+    color: inherit;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+}
+
+/* Rótulo em versalete monoespaçado — eyebrows, datas, metadados */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Navegação — sans-serif pesada, versalete (menu do topo e rodapé) */
+.nav-link {
+  font-family: var(--font-sans), "Segoe UI", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Respiro horizontal fluido — cresce com a largura do monitor.
+   Substitui os pares px-4 / md:px-12 nas seções full-width. */
+.pad-x {
+  padding-left: clamp(1rem, 4.5vw, 6.5rem);
+  padding-right: clamp(1rem, 4.5vw, 6.5rem);
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 60;
+  background: var(--color-gold);
+  color: var(--color-navy);
+  padding: 8px 14px;
+  font: 700 13px var(--font-sans), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+/* Corpo de matéria e artigo — Source Serif 4 */
+.article-prose {
+  font-family: var(--font-serif), Georgia, serif;
+  color: var(--color-body-2);
+}
+
+.article-prose > * + * {
+  margin-top: 1.5rem;
+}
+
+.article-prose p {
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.72;
+}
+
+/* Texto corrido justificado — linhas alinhadas nas duas margens */
+.article-prose p,
+.article-prose li {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+}
+
+.article-prose p:first-child {
+  font-size: 1.375rem;
+  line-height: 1.6;
+  color: #12141a;
+}
+
+.article-prose h2 {
+  margin: 0.5rem 0 -0.5rem;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gold-ink);
+}
+
+.article-prose ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.5rem;
+  list-style: disc;
+}
+
+.article-prose li {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.article-prose blockquote {
+  margin: 0.5rem 0;
+  padding: 0;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--color-navy);
+}
+
+.article-prose a {
+  color: var(--color-navy);
+  text-decoration: underline;
+  text-decoration-color: var(--color-gold);
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    transition: none !important;
+  }
+}
+
+/* Placeholder listrado das imagens (mesmo tratamento dos mockups) */
+.motif {
+  background-image: repeating-linear-gradient(
+    135deg,
+    #e6e2d6 0 10px,
+    #efece2 10px 20px
+  );
+}
+
+.motif-dark {
+  background-image: repeating-linear-gradient(
+    115deg,
+    #15181e 0 14px,
+    #1d2129 14px 28px
+  );
+}
+

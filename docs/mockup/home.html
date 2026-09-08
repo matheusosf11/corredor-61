@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Corredor 61 — estudo visual da home (v1)</title>
+  <style>
+    :root {
+      --navy: #16345a;
+      --navy-deep: #0f2744;
+      --cream: #f4efe6;
+      --cream-2: #ebe4d6;
+      --gold: #c9a227;
+      --gold-dark: #a7861b;
+      --ink: #1a2330;
+      --muted: #5c6777;
+      --line: #ddd4c4;
+      --white: #fffcf7;
+      --black: #0b0d10;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #d9d1c3; color: var(--ink); font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .banner {
+      background: var(--navy-deep);
+      color: var(--cream);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-align: center;
+      padding: 8px 16px;
+    }
+    .banner strong { color: var(--gold); font-weight: 600; }
+
+    .site {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--white);
+      box-shadow: 0 0 0 1px #cfc6b6;
+    }
+
+    .header {
+      background: var(--navy);
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      padding: 14px 28px;
+    }
+    .logo { height: 56px; width: auto; flex-shrink: 0; }
+    .nav {
+      display: flex;
+      gap: 22px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      flex: 1;
+    }
+    .nav a { opacity: 0.88; border-bottom: 2px solid transparent; padding: 6px 0; }
+    .nav a:hover, .nav a.is-active { opacity: 1; border-bottom-color: var(--gold); }
+    .header-tools { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+    .search {
+      display: flex;
+      align-items: center;
+      background: rgba(244, 239, 230, 0.12);
+      border: 1px solid rgba(244, 239, 230, 0.28);
+      padding: 7px 10px;
+      min-width: 180px;
+    }
+    .search input {
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: var(--cream);
+      width: 100%;
+      font-size: 13px;
+    }
+    .search input::placeholder { color: rgba(244, 239, 230, 0.55); }
+    .ig {
+      width: 34px; height: 34px;
+      display: grid; place-items: center;
+      border: 1px solid rgba(244, 239, 230, 0.35);
+      color: var(--cream);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .gold-line { height: 3px; background: linear-gradient(90deg, var(--gold), var(--navy) 70%); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) 320px;
+      gap: 32px;
+      padding: 28px 28px 8px;
+    }
+
+    .kicker {
+      color: var(--gold-dark);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .meta { color: var(--muted); font-size: 12px; margin-top: 8px; }
+    h1, h2, h3, h4 { font-weight: 700; line-height: 1.22; color: var(--navy); }
+
+    .hero-img {
+      height: 280px;
+      background:
+        linear-gradient(180deg, rgba(15,39,68,0.15), rgba(15,39,68,0.55)),
+        repeating-linear-gradient(90deg, #1e4a78 0 18px, #f4efe6 18px 26px);
+      display: grid;
+      place-items: end start;
+      padding: 16px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-img::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 18%;
+      width: 28px;
+      height: 64px;
+      transform: translateX(-18px);
+      background: var(--navy);
+      box-shadow: 18px 0 0 var(--navy);
+      opacity: 0.85;
+    }
+    .hero-img .path {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 42%;
+      height: 70%;
+      transform: translateX(-50%);
+      background: linear-gradient(to top, #c9a227, transparent);
+      clip-path: polygon(18% 100%, 82% 100%, 52% 0, 48% 0);
+      opacity: 0.55;
+    }
+    .hero h1 { font-size: 28px; margin: 8px 0 10px; }
+    .hero p { color: #3d4754; font-size: 16px; line-height: 1.45; max-width: 46ch; }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 20px;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+    .card-img {
+      height: 110px;
+      background: var(--navy);
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .card-img.a { background: linear-gradient(135deg, #16345a, #3a5d86); }
+    .card-img.b { background: linear-gradient(135deg, #0f2744, #c9a227 140%); }
+    .card-img.c { background: linear-gradient(135deg, #2a4a6e, #f4efe6 160%); }
+    .card h3 { font-size: 16px; margin: 6px 0 6px; }
+    .card p { font-size: 13px; color: #4a5563; line-height: 1.4; }
+
+    .sidebar {
+      background: var(--cream);
+      padding: 20px 18px 12px;
+      border-left: 3px solid var(--gold);
+      align-self: start;
+    }
+    .sidebar h2 {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .article {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .article:last-child { border-bottom: 0; }
+    .article h3 { font-size: 15px; margin: 4px 0 6px; }
+    .author {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .article p { font-size: 13px; color: #4a5563; line-height: 1.4; }
+    .see-more {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--navy);
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 2px;
+    }
+
+    .recentes {
+      margin: 12px 28px 0;
+      padding: 22px 0 8px;
+      border-top: 1px solid var(--line);
+    }
+    .recentes h2 {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .recentes ol {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 32px;
+      list-style: none;
+      counter-reset: rec;
+    }
+    .recentes li {
+      counter-increment: rec;
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--cream-2);
+    }
+    .recentes li::before {
+      content: counter(rec, decimal-leading-zero);
+      color: var(--gold-dark);
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .recentes time { color: var(--muted); font-size: 12px; white-space: nowrap; }
+
+    .apoiadores {
+      margin: 8px 28px 0;
+      padding: 28px 0 32px;
+      border-top: 1px solid var(--line);
+    }
+    .apoiadores h2 {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .apoiadores .note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+    .logos {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+    .logo-slot {
+      height: 72px;
+      border: 1px solid var(--line);
+      background: var(--cream);
+      display: grid;
+      place-items: center;
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .footer {
+      background: var(--black);
+      color: var(--cream);
+      padding: 32px 28px 24px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 24px;
+    }
+    .footer img { height: 48px; margin-bottom: 10px; }
+    .footer p { font-size: 13px; color: #cfc6b6; line-height: 1.5; max-width: 36ch; }
+    .footer h3 {
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .footer a { display: block; font-size: 13px; color: var(--cream); opacity: 0.85; padding: 3px 0; }
+    .copy {
+      grid-column: 1 / -1;
+      border-top: 1px solid #2a2e34;
+      margin-top: 8px;
+      padding-top: 14px;
+      font-size: 12px;
+      color: #9aa3ad;
+    }
+
+    @media (max-width: 860px) {
+      .header { flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+      .logo { height: 44px; }
+      .nav { order: 3; width: 100%; gap: 14px; font-size: 11px; overflow-x: auto; }
+      .layout { grid-template-columns: 1fr; padding: 20px 16px; gap: 24px; }
+      .hero h1 { font-size: 22px; }
+      .hero-img { height: 200px; }
+      .news-grid { grid-template-columns: 1fr; }
+      .recentes, .apoiadores { margin-left: 16px; margin-right: 16px; }
+      .recentes ol, .logos { grid-template-columns: 1fr 1fr; }
+      .footer { grid-template-columns: 1fr; padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner">Estudo visual da home — não é o site final. Textos e fotos são fictícios, só para mostrar o layout do documento de requisitos.</div>
+  <div class="site">
+    <header class="header">
+      <img class="logo" src="logo.png" alt="Corredor 61" />
+      <nav class="nav" aria-label="Principal">
+        <a class="is-active" href="#noticias">Notícias</a>
+        <a href="#artigos">Artigos</a>
+        <a href="#autores">Autores</a>
+        <a href="#sobre">Sobre</a>
+      </nav>
+      <div class="header-tools">
+        <form class="search" role="search" action="#" onsubmit="return false">
+          <input type="search" placeholder="Buscar notícias e artigos" aria-label="Buscar" />
+        </form>
+        <a class="ig" href="https://www.instagram.com/corredor61.br" target="_blank" rel="noopener">IG</a>
+      </div>
+    </header>
+    <div class="gold-line"></div>
+
+    <div class="layout">
+      <main>
+        <article class="hero">
+          <div class="hero-img" aria-hidden="true"><span class="path"></span></div>
+          <div class="kicker">Legislativo · Destaque</div>
+          <h1>CCJ do Senado analisa proposta que altera regras de tramitação legislativa</h1>
+          <p>O colegiado discute mudanças de rito que podem afetar a tramitação de projetos de interesse institucional. A matéria segue para o plenário se for aprovada na comissão.</p>
+          <div class="meta">03.set.2026 · Equipe Corredor 61</div>
+        </article>
+
+        <section class="news-grid" id="noticias" aria-label="Notícias">
+          <article class="card">
+            <div class="card-img a" aria-hidden="true"></div>
+            <div class="kicker">Judiciário</div>
+            <h3>STF agenda julgamento sobre limites de atuação de órgãos de controle</h3>
+            <p>A pauta reúne ações que tratam de competência e de segurança jurídica para gestores públicos.</p>
+            <div class="meta">02.set.2026</div>
+          </article>
+          <article class="card">
+            <div class="card-img b" aria-hidden="true"></div>
+            <div class="kicker">Política</div>
+            <h3>Lideranças no Congresso articulam calendário de votações até o recesso</h3>
+            <p>O acordo inclui projetos de impacto regulatório e matérias já debatidas em comissões temáticas.</p>
+            <div class="meta">02.set.2026</div>
+          </article>
+          <article class="card">
+            <div class="card-img c" aria-hidden="true"></div>
+            <div class="kicker">Institucional</div>
+            <h3>Tribunal de Contas reforça orientações sobre transparência em convênios</h3>
+            <p>Nova cartilha reúne entendimentos recentes e recomendações para entes públicos e parceiros.</p>
+            <div class="meta">01.set.2026</div>
+          </article>
+          <article class="card">
+            <div class="card-img a" aria-hidden="true"></div>
+            <div class="kicker">Legislativo</div>
+            <h3>Câmara discute marco sobre uso de dados em políticas públicas</h3>
+            <p>Relatoria deve apresentar substitutivo após audiências com especialistas e órgãos de defesa.</p>
+            <div class="meta">01.set.2026</div>
+          </article>
+          <article class="card">
+            <div class="card-img b" aria-hidden="true"></div>
+            <div class="kicker">Judiciário</div>
+            <h3>Superior Tribunal uniformiza entendimento sobre prazos processuais digitais</h3>
+            <p>A decisão busca reduzir divergências entre turmas e dar previsibilidade a advogados e serventias.</p>
+            <div class="meta">31.ago.2026</div>
+          </article>
+          <article class="card">
+            <div class="card-img c" aria-hidden="true"></div>
+            <div class="kicker">Política</div>
+            <h3>Governos estaduais avaliam impactos de nova regra de transferências</h3>
+            <p>Técnicos apontam efeitos no planejamento orçamentário e na execução de programas continuados.</p>
+            <div class="meta">31.ago.2026</div>
+          </article>
+        </section>
+      </main>
+
+      <aside class="sidebar" id="artigos">
+        <h2>Artigos e colunistas</h2>
+        <article class="article">
+          <div class="author">Ana Ribeiro</div>
+          <h3>O preço institucional de acelerar o rito legislativo</h3>
+          <p>Quando a urgência vira regra, o Congresso perde capacidade de escrutínio — e o cidadão, previsibilidade.</p>
+        </article>
+        <article class="article">
+          <div class="author">Carlos Mendes</div>
+          <h3>Controle público não é obstáculo: é método</h3>
+          <p>A tensão entre celeridade administrativa e accountability exige desenho normativo, não atalhos.</p>
+        </article>
+        <article class="article">
+          <div class="author">Helena Costa</div>
+          <h3>Dados públicos, decisão privada?</h3>
+          <p>A regulação do uso de informação no Estado precisa separar inovação de opacidade.</p>
+        </article>
+        <article class="article">
+          <div class="author">Paulo Andrade</div>
+          <h3>Segurança jurídica começa no regulamento interno</h3>
+          <p>Regras de tramitação pouco claras geram litígio antes mesmo da sanção da lei.</p>
+        </article>
+        <article class="article">
+          <div class="author">Marina Lopes</div>
+          <h3>Brasília além do noticiário: o que o corredor não mostra</h3>
+          <p>Bastidores técnicos — consultorias, comissões e pareceres — definem mais do que o discurso de plenário.</p>
+        </article>
+        <a class="see-more" href="#artigos">Ver todos os artigos</a>
+      </aside>
+    </div>
+
+    <section class="recentes" aria-label="Mais recentes">
+      <h2>Mais recentes</h2>
+      <ol>
+        <li><span>Comissão mista discute relatório de medidas provisórias</span><time>hoje, 18h</time></li>
+        <li><span>AGU publica parecer sobre conflitos federativos em convênios</span><time>hoje, 16h</time></li>
+        <li><span>OAB se manifesta sobre proposta de alteração do CPC digital</span><time>hoje, 14h</time></li>
+        <li><span>Ministério detalha cronograma de consultas públicas</span><time>hoje, 11h</time></li>
+        <li><span>Assembleia avalia impacto de nova vinculação orçamentária</span><time>ontem</time></li>
+        <li><span>Conselho publica enunciado sobre provas em ambiente eletrônico</span><time>ontem</time></li>
+        <li><span>Frente parlamentar agenda ciclo de debates sobre regulação</span><time>ontem</time></li>
+        <li><span>Nota técnica aponta riscos em alteração de rito de vetos</span><time>ontem</time></li>
+      </ol>
+    </section>
+
+    <section class="apoiadores" id="apoiadores">
+      <h2>Apoiadores institucionais</h2>
+      <p class="note">Instituições que apoiam o projeto — exposição institucional, sem publicidade.</p>
+      <div class="logos">
+        <div class="logo-slot">Instituição A</div>
+        <div class="logo-slot">Escritório B</div>
+        <div class="logo-slot">Fundação C</div>
+        <div class="logo-slot">Instituto D</div>
+        <div class="logo-slot">Associação E</div>
+        <div class="logo-slot">Organização F</div>
+      </div>
+    </section>
+
+    <footer class="footer" id="sobre">
+      <div>
+        <img src="logo.png" alt="Corredor 61" />
+        <p>Portal de conteúdo técnico, jurídico, legislativo e político. Credibilidade, seriedade e autoridade — com navegação moderna.</p>
+      </div>
+      <div>
+        <h3>Portal</h3>
+        <a href="#noticias">Notícias</a>
+        <a href="#artigos">Artigos</a>
+        <a href="#autores">Autores</a>
+        <a href="#sobre">Sobre</a>
+      </div>
+      <div>
+        <h3>Institucional</h3>
+        <a href="#apoiadores">Apoiadores</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Termos</a>
+        <a href="https://www.instagram.com/corredor61.br" target="_blank" rel="noopener">Instagram</a>
+      </div>
+      <div class="copy">© Corredor 61 · Estudo de layout da v1 · textos fictícios</div>
+    </footer>
+  </div>
+</body>
+</html>
