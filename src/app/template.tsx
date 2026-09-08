@@ -1,13 +1,16 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { usePathname } from "next/navigation";
 
 /**
  * template.tsx re-monta a cada navegação (ao contrário de layout.tsx),
  * então a animação de entrada dispara em toda troca de página.
  */
 export default function Template({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const reduceMotion = useReducedMotion();
+  if (pathname.startsWith("/studio")) return children;
 
   return (
     <motion.div

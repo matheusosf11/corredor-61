@@ -9,8 +9,8 @@ export const metadata: Metadata = {
     "Empresas, escritórios, instituições e organizações que apoiam o Corredor 61 — exposição institucional, sem publicidade.",
 };
 
-export default function ApoiadoresPage() {
-  const items = getActiveSupporters();
+export default async function ApoiadoresPage() {
+  const items = await getActiveSupporters();
 
   return (
     <div>

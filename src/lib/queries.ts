@@ -1,16 +1,37 @@
-import { about, articles, authors, categories, news, supporters } from "./data";
+import { about, articles, authors, news, supporters } from "./data";
 import { DEMO_IMAGES, demoImageAt } from "./demo-images";
-import { bodyToText } from "./format";
+import { bodyToText, initialsFromName } from "./format";
+import { categories, getCategory } from "./categories";
 import type {
+  AboutContent,
   Article,
   Author,
   CategorySlug,
   News,
   SearchHit,
+  Supporter,
 } from "./types";
+import { client } from "@/sanity/client";
+import {
+  aboutQuery,
+  articleBySlugQuery,
+  articlesQuery,
+  authorsQuery,
+  newsBySlugQuery,
+  newsQuery,
+  searchQuery,
+  supportersQuery,
+} from "@/sanity/queries";
+
+export { getCategory, categories as getCategoriesList };
+
+export function getCategories() {
+  return categories;
+}
 
 const NEWS_PAGE_SIZE = 9;
 const ARTICLE_PAGE_SIZE = 9;
+const fetchOpts = { next: { revalidate: 60, tags: ["sanity"] as string[] } };
 
 function isLive(item: { status: string; publishedAt: string }) {
   return (
@@ -23,52 +44,82 @@ function byDateDesc<T extends { publishedAt: string }>(a: T, b: T) {
   return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
 }
 
-export function getCategories() {
-  return categories;
+async function cmsFetch<T>(
+  query: string,
+  params: Record<string, unknown> = {},
+): Promise<T | null> {
+  try {
+    return await client.fetch<T>(query, params, fetchOpts);
+  } catch (error) {
+    console.error("Sanity:", error);
+    return null;
+  }
 }
 
-export function getCategory(slug: string) {
-  return categories.find((category) => category.slug === slug) ?? null;
+function withCover(item: News, index: number): News {
+  return {
+    ...item,
+    cover: { ...item.cover, image: item.cover.image ?? demoImageAt(index) },
+  };
 }
 
-/**
- * Lista completa de notícias publicadas, ordenada, com uma capa de
- * demonstração fixa por posição (rodízio) — assim uma mesma matéria mostra
- * sempre a mesma imagem em qualquer lugar e listas não repetem capas.
- */
-function publishedNewsWithCovers(): News[] {
+function withArticleCover(item: Article, index: number): Article {
+  const offset = Math.floor(DEMO_IMAGES.length / 2);
+  return {
+    ...item,
+    cover: {
+      ...item.cover,
+      image: item.cover.image ?? demoImageAt(index + offset),
+    },
+  };
+}
+
+function hydrateAuthor(
+  row: Partial<Author> & { name: string; slug: string },
+): Author {
+  return {
+    slug: row.slug,
+    name: row.name,
+    role: row.role ?? "",
+    bio: row.bio ?? "",
+    initials: row.initials || initialsFromName(row.name),
+    active: row.active ?? true,
+    photoUrl: row.photoUrl,
+  };
+}
+
+function staticNews(): News[] {
   return news
     .filter(isLive)
     .slice()
     .sort(byDateDesc)
-    .map((item, index) => ({
-      ...item,
-      cover: { ...item.cover, image: item.cover.image ?? demoImageAt(index) },
-    }));
+    .map((item, index) => withCover(item, index));
 }
 
-export function getPublishedNews(category?: CategorySlug) {
-  const list = publishedNewsWithCovers();
-  return category
-    ? list.filter((item) => item.category === category)
-    : list;
+function staticArticles(): Article[] {
+  return articles
+    .filter(isLive)
+    .slice()
+    .sort(byDateDesc)
+    .map((item, index) => withArticleCover(item, index));
 }
 
-export function getNewsBySlug(slug: string) {
-  return getPublishedNews().find((item) => item.slug === slug) ?? null;
+export async function getPublishedNews(category?: CategorySlug) {
+  const rows = await cmsFetch<News[]>(newsQuery);
+  const list = rows?.length
+    ? rows.map((item, index) => withCover(item, index))
+    : staticNews();
+  return category ? list.filter((item) => item.category === category) : list;
 }
 
-export function getFeaturedNews(): News {
-  const published = getPublishedNews();
-  const featured = published.find((item) => item.featured) ?? published[0];
-  if (!featured) {
-    throw new Error("Nenhuma notícia publicada para a home.");
-  }
-  return featured;
+export async function getNewsBySlug(slug: string) {
+  const row = await cmsFetch<News | null>(newsBySlugQuery, { slug });
+  if (row) return withCover(row, 0);
+  return staticNews().find((item) => item.slug === slug) ?? null;
 }
 
-export function getHomeHeroNews(limit = 5): News[] {
-  const published = getPublishedNews();
+export async function getHomeHeroNews(limit = 5): Promise<News[]> {
+  const published = await getPublishedNews();
   const featured = published.find((item) => item.featured);
   const ordered = featured
     ? [featured, ...published.filter((item) => item.slug !== featured.slug)]
@@ -76,14 +127,14 @@ export function getHomeHeroNews(limit = 5): News[] {
   return ordered.slice(0, limit);
 }
 
-export function getHomeNewsGrid(featuredSlug: string, limit = 6) {
-  return getPublishedNews()
+export async function getHomeNewsGrid(featuredSlug: string, limit = 6) {
+  return (await getPublishedNews())
     .filter((item) => item.slug !== featuredSlug)
     .slice(0, limit);
 }
 
-export function getNewsPage(page: number, category?: CategorySlug) {
-  const items = getPublishedNews(category);
+export async function getNewsPage(page: number, category?: CategorySlug) {
+  const items = await getPublishedNews(category);
   const totalPages = Math.max(1, Math.ceil(items.length / NEWS_PAGE_SIZE));
   const current = Math.min(Math.max(page, 1), totalPages);
   const start = (current - 1) * NEWS_PAGE_SIZE;
@@ -95,128 +146,107 @@ export function getNewsPage(page: number, category?: CategorySlug) {
   };
 }
 
-export function getPublishedArticles() {
-  // Deslocamento no rodízio para não coincidir com a capa da notícia de mesma
-  // posição quando as duas listas aparecem juntas (ex.: home).
-  const offset = Math.floor(DEMO_IMAGES.length / 2);
-  return articles
-    .filter(isLive)
-    .slice()
-    .sort(byDateDesc)
-    .map((item, index) => ({
-      ...item,
-      cover: {
-        ...item.cover,
-        image: item.cover.image ?? demoImageAt(index + offset),
-      },
-    }));
+export async function getPublishedArticles() {
+  const rows = await cmsFetch<Article[]>(articlesQuery);
+  if (rows?.length) {
+    return rows.map((item, index) => withArticleCover(item, index));
+  }
+  return staticArticles();
 }
 
-export function getArticleBySlug(slug: string) {
-  return getPublishedArticles().find((item) => item.slug === slug) ?? null;
+export async function getArticleBySlug(slug: string) {
+  const row = await cmsFetch<Article | null>(articleBySlugQuery, { slug });
+  if (row) return withArticleCover(row, 0);
+  return staticArticles().find((item) => item.slug === slug) ?? null;
 }
 
-export function getHomeArticles(limit = 5) {
-  return getPublishedArticles().slice(0, limit);
+export async function getHomeArticles(limit = 5) {
+  return (await getPublishedArticles()).slice(0, limit);
 }
 
-export function getArticlesPage(page: number) {
-  const items = getPublishedArticles();
-  const totalPages = Math.max(1, Math.ceil(items.length / ARTICLE_PAGE_SIZE));
-  const current = Math.min(Math.max(page, 1), totalPages);
-  const start = (current - 1) * ARTICLE_PAGE_SIZE;
-  return {
-    items: items.slice(start, start + ARTICLE_PAGE_SIZE),
-    page: current,
-    totalPages,
-    total: items.length,
-  };
+export async function getArticlesByAuthor(authorSlug: string) {
+  return (await getPublishedArticles()).filter(
+    (item) => item.authorSlug === authorSlug,
+  );
 }
 
-export function getArticlesByAuthor(authorSlug: string) {
-  return getPublishedArticles().filter((item) => item.authorSlug === authorSlug);
-}
-
-export function getAllAuthors() {
+export async function getAllAuthors() {
+  const rows = await cmsFetch<Author[]>(authorsQuery);
+  if (rows?.length) return rows.map(hydrateAuthor);
   return authors;
 }
 
-export function getActiveAuthors() {
-  return authors.filter((author) => author.active);
+export async function getActiveAuthors() {
+  return (await getAllAuthors()).filter((author) => author.active);
 }
 
-export function getAuthorBySlug(slug: string): Author | null {
-  return authors.find((author) => author.slug === slug) ?? null;
+export async function getAuthorBySlug(slug: string): Promise<Author | null> {
+  return (await getAllAuthors()).find((author) => author.slug === slug) ?? null;
 }
 
-export function getAuthor(article: Article) {
-  const author = getAuthorBySlug(article.authorSlug);
+export async function getAuthor(article: Article) {
+  const author = await getAuthorBySlug(article.authorSlug);
   if (!author) {
     throw new Error(`Autor não encontrado: ${article.authorSlug}`);
   }
   return author;
 }
 
-export function getActiveSupporters() {
+export async function getActiveSupporters(): Promise<Supporter[]> {
+  const rows = await cmsFetch<Supporter[]>(supportersQuery);
+  if (rows?.length) return rows;
   return supporters
     .filter((item) => item.active)
     .slice()
     .sort((a, b) => a.order - b.order);
 }
 
-export function getAbout() {
+export async function getAbout(): Promise<AboutContent> {
+  const row = await cmsFetch<AboutContent | null>(aboutQuery);
+  if (row?.proposal) return row;
   return about;
 }
 
-export function getSiteStats() {
-  return {
-    news: getPublishedNews().length,
-    articles: getPublishedArticles().length,
-    authors: getActiveAuthors().length,
-  };
-}
-
-export function getRecentFeed(limit = 8) {
-  const mixed = [
-    ...getPublishedNews().map((item) => ({
-      type: "noticia" as const,
-      slug: item.slug,
-      title: item.title,
-      publishedAt: item.publishedAt,
-      href: `/noticias/${item.slug}`,
-    })),
-    ...getPublishedArticles().map((item) => ({
-      type: "artigo" as const,
-      slug: item.slug,
-      title: item.title,
-      publishedAt: item.publishedAt,
-      href: `/artigos/${item.slug}`,
-    })),
-  ]
-    .sort(byDateDesc)
-    .slice(0, limit);
-
-  return mixed;
-}
-
-export function searchContent(query: string): SearchHit[] {
-  const term = query.trim().toLowerCase();
+export async function searchContent(query: string): Promise<SearchHit[]> {
+  const term = query.trim();
   if (!term) return [];
 
-  const newsHits: SearchHit[] = getPublishedNews()
-    .filter((item) => matches(item.title, item.dek, bodyToText(item.body), term))
+  const rows = await cmsFetch<
+    { _type: string; slug: string; title: string; dek: string }[] | null
+  >(searchQuery, { term: `${term}*` });
+
+  if (rows?.length) {
+    return rows.map((hit) => ({
+      type: hit._type === "article" ? ("artigo" as const) : ("noticia" as const),
+      slug: hit.slug,
+      title: hit.title,
+      dek: hit.dek,
+      href:
+        hit._type === "article"
+          ? `/artigos/${hit.slug}`
+          : `/noticias/${hit.slug}`,
+    }));
+  }
+
+  const needle = term.toLowerCase();
+  const newsHits: SearchHit[] = (await getPublishedNews())
+    .filter((item) =>
+      matches(item.title, item.dek, bodyToText(item.body), needle),
+    )
     .map((item) => ({
-      type: "noticia",
+      type: "noticia" as const,
       slug: item.slug,
       title: item.title,
       dek: item.dek,
       href: `/noticias/${item.slug}`,
     }));
 
-  const articleHits: SearchHit[] = getPublishedArticles()
-    .filter((item) => matches(item.title, item.dek, bodyToText(item.body), term))
+  const articleHits: SearchHit[] = (await getPublishedArticles())
+    .filter((item) =>
+      matches(item.title, item.dek, bodyToText(item.body), needle),
+    )
     .map((item) => ({
-      type: "artigo",
+      type: "artigo" as const,
       slug: item.slug,
       title: item.title,
       dek: item.dek,

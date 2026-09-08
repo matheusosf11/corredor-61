@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { NewsCard } from "@/components/news/NewsItems";
 import { formatDate } from "@/lib/format";
+import { getCategory } from "@/lib/categories";
 import {
-  getAuthorBySlug,
-  getCategory,
+  getAllAuthors,
   getHomeArticles,
   getHomeHeroNews,
   getHomeNewsGrid,
@@ -11,15 +11,18 @@ import {
 import { ArtigosList } from "./_components/ArtigosList";
 import { HeroCarousel } from "./_components/HeroCarousel";
 
-export default function HomePage() {
-  const heroNews = getHomeHeroNews(5);
+export default async function HomePage() {
+  const [heroNews, articles, authors] = await Promise.all([
+    getHomeHeroNews(5),
+    getHomeArticles(8),
+    getAllAuthors(),
+  ]);
   const featured = heroNews[0];
-  // 10 = tamanho do rodízio de capas de demonstração, para não repetir imagem.
-  const grid = getHomeNewsGrid(featured.slug, 10);
-  const articles = getHomeArticles(8);
+  const grid = featured ? await getHomeNewsGrid(featured.slug, 10) : [];
+  const authorsBySlug = new Map(authors.map((author) => [author.slug, author]));
 
   const artigoItems = articles.map((item) => {
-    const author = getAuthorBySlug(item.authorSlug);
+    const author = authorsBySlug.get(item.authorSlug);
     return {
       slug: item.slug,
       title: item.title,
@@ -47,7 +50,16 @@ export default function HomePage() {
 
       {/* Sessão do destaque — carrossel + coluna de artigos */}
       <div className="pad-x lg:grid lg:grid-cols-[minmax(0,1fr)_clamp(320px,25vw,380px)] lg:items-stretch lg:gap-x-10">
-        <HeroCarousel items={heroSlides} />
+        {heroSlides.length > 0 ? (
+          <HeroCarousel items={heroSlides} />
+        ) : (
+          <div className="flex min-h-[280px] items-center bg-navy px-8 py-16">
+            <p className="font-serif text-[18px] text-cream/80">
+              As primeiras notícias aparecem aqui assim que forem publicadas no
+              estúdio.
+            </p>
+          </div>
+        )}
 
         <aside className="mt-8 mb-4 flex flex-col lg:mt-10 lg:mb-0 lg:self-stretch">
           <div className="mb-3 flex items-baseline justify-between border-b border-navy/15 pb-2">
@@ -78,11 +90,17 @@ export default function HomePage() {
             Ver todas →
           </Link>
         </div>
-        <div className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {grid.map((item) => (
-            <NewsCard key={item.slug} item={item} />
-          ))}
-        </div>
+        {grid.length === 0 ? (
+          <p className="py-10 font-serif text-[15px] text-navy/60">
+            Nenhuma matéria publicada por enquanto.
+          </p>
+        ) : (
+          <div className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {grid.map((item) => (
+              <NewsCard key={item.slug} item={item} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

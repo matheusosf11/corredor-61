@@ -5,7 +5,7 @@ import {
   formatFullDate,
   formatTime,
 } from "@/lib/format";
-import { getCategory } from "@/lib/queries";
+import { getCategory } from "@/lib/categories";
 import type { News } from "@/lib/types";
 import { CoverMedia } from "@/components/ui/CoverMedia";
 

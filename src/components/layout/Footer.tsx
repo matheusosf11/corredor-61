@@ -24,8 +24,8 @@ function InstagramIcon() {
   );
 }
 
-export function Footer() {
-  const supporters = getActiveSupporters();
+export async function Footer() {
+  const supporters = await getActiveSupporters();
 
   return (
     <footer>

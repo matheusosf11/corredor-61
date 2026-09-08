@@ -1,9 +1,8 @@
 import type { Supporter } from "@/lib/types";
 
-/** Espaço reservado para a logo/foto do apoiador (faixa do rodapé e da home). */
-export function SupporterLogo({ item }: { item: Supporter }) {
-  const inner = (
-    <span className="motif flex h-[120px] flex-col items-center justify-center gap-1.5 border border-navy/12 px-2 text-center">
+function PlaceholderMark({ label }: { label: string }) {
+  return (
+    <>
       <svg
         viewBox="0 0 24 24"
         aria-hidden="true"
@@ -19,9 +18,27 @@ export function SupporterLogo({ item }: { item: Supporter }) {
         <path d="m4 16 5-5 4 4 3-3 4 4" />
       </svg>
       <span className="font-mono text-[9px] tracking-[0.08em] text-navy/40 uppercase">
-        {item.shortName}
+        {label}
       </span>
-      <span className="sr-only"> — {item.name}</span>
+    </>
+  );
+}
+
+/** Espaço da logo do apoiador (faixa do rodapé e da home). */
+export function SupporterLogo({ item }: { item: Supporter }) {
+  const inner = (
+    <span className="motif flex h-[120px] flex-col items-center justify-center gap-1.5 border border-navy/12 px-2 text-center">
+      {item.logoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.logoUrl}
+          alt={item.name}
+          className="max-h-16 max-w-[85%] object-contain"
+        />
+      ) : (
+        <PlaceholderMark label={item.shortName} />
+      )}
+      <span className="sr-only">{item.name}</span>
     </span>
   );
 
@@ -46,8 +63,19 @@ export function SupportersGrid({ items }: { items: Supporter[] }) {
       {items.map((item) => {
         const card = (
           <span className="flex h-full flex-col items-center gap-3 border border-navy/12 bg-cream px-4 py-7 text-center">
-            <span className="motif flex h-14 w-full items-center justify-center border border-navy/12 font-mono text-[11px] tracking-[0.08em] text-navy/45 uppercase">
-              {item.shortName}
+            <span className="motif flex h-14 w-full items-center justify-center border border-navy/12 px-2">
+              {item.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.logoUrl}
+                  alt=""
+                  className="max-h-10 max-w-full object-contain"
+                />
+              ) : (
+                <span className="font-mono text-[11px] tracking-[0.08em] text-navy/45 uppercase">
+                  {item.shortName}
+                </span>
+              )}
             </span>
             <span className="font-sans text-[15px] leading-snug font-semibold text-navy">
               {item.name}

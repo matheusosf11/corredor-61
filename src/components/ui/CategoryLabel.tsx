@@ -1,4 +1,4 @@
-import { getCategory } from "@/lib/queries";
+import { getCategory } from "@/lib/categories";
 import type { CategorySlug } from "@/lib/types";
 
 export function CategoryLabel({

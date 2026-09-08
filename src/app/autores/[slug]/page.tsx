@@ -14,27 +14,29 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return getAllAuthors().map((author) => ({ slug: author.slug }));
+  return (await getAllAuthors()).map((author) => ({ slug: author.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const author = getAuthorBySlug(slug);
+  const author = await getAuthorBySlug(slug);
   if (!author) return { title: "Autor não encontrado" };
   return { title: author.name, description: author.bio };
 }
 
 export default async function AutorPage({ params }: Props) {
   const { slug } = await params;
-  const author = getAuthorBySlug(slug);
+  const author = await getAuthorBySlug(slug);
   if (!author) notFound();
-  const articles = getArticlesByAuthor(author.slug);
+  const articles = await getArticlesByAuthor(author.slug);
 
   return (
     <div>
       <div className="pad-x flex flex-col items-center gap-6 bg-blackish py-12 text-center md:flex-row md:items-center md:gap-8 md:text-left">
         <AuthorMark
           initials={author.initials}
+          photoUrl={author.photoUrl}
+          name={author.name}
           size={130}
           onDark
           className="shrink-0"

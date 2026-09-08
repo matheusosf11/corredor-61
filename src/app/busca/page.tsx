@@ -15,7 +15,7 @@ type Props = {
 export default async function BuscaPage({ searchParams }: Props) {
   const { q = "", tipo } = await searchParams;
   const query = q.trim();
-  const all = searchContent(query);
+  const all = await searchContent(query);
   const filter = tipo === "noticia" || tipo === "artigo" ? tipo : undefined;
   const results = filter ? all.filter((hit) => hit.type === filter) : all;
 

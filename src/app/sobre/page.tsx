@@ -8,8 +8,8 @@ export const metadata: Metadata = {
     "Proposta, objetivos e pessoas por trás do portal Corredor 61.",
 };
 
-export default function SobrePage() {
-  const about = getAbout();
+export default async function SobrePage() {
+  const about = await getAbout();
 
   return (
     <div>
@@ -73,7 +73,7 @@ export default function SobrePage() {
                     role="img"
                     aria-label={`Foto de ${person.name}`}
                     style={{
-                      backgroundImage: `url("/team/${(index % 3) + 1}.jpg")`,
+                      backgroundImage: `url("${person.photoUrl ?? `/team/${(index % 3) + 1}.jpg`}")`,
                     }}
                     className="aspect-[4/5] w-full bg-cover bg-top"
                   />

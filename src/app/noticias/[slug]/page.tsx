@@ -8,11 +8,8 @@ import { CoverMedia } from "@/components/ui/CoverMedia";
 import { ReadingProgress } from "@/components/content/ReadingProgress";
 import { ShareRow } from "@/components/content/ShareRow";
 import { formatDate, formatTime, readingMinutes } from "@/lib/format";
-import {
-  getCategory,
-  getNewsBySlug,
-  getPublishedNews,
-} from "@/lib/queries";
+import { getCategory } from "@/lib/categories";
+import { getNewsBySlug, getPublishedNews } from "@/lib/queries";
 import { site } from "@/lib/site";
 
 type Props = {
@@ -20,12 +17,12 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return getPublishedNews().map((item) => ({ slug: item.slug }));
+  return (await getPublishedNews()).map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = getNewsBySlug(slug);
+  const item = await getNewsBySlug(slug);
   if (!item) return { title: "Notícia não encontrada" };
   return {
     title: item.title,
@@ -41,11 +38,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NoticiaPage({ params }: Props) {
   const { slug } = await params;
-  const item = getNewsBySlug(slug);
+  const item = await getNewsBySlug(slug);
   if (!item) notFound();
 
   const category = getCategory(item.category);
-  const related = getPublishedNews()
+  const related = (await getPublishedNews())
     .filter((n) => n.slug !== item.slug)
     .slice(0, 2);
 

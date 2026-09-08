@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthorMark } from "@/components/ui/AuthorMark";
 import { formatDate, readingMinutes } from "@/lib/format";
+import { getCategory } from "@/lib/categories";
 import {
   getActiveAuthors,
-  getAuthorBySlug,
-  getCategory,
+  getAllAuthors,
   getPublishedArticles,
 } from "@/lib/queries";
 import {
@@ -19,11 +19,18 @@ export const metadata: Metadata = {
     "Análises assinadas por quem atua no debate institucional brasileiro.",
 };
 
-export default function ArtigosPage() {
-  const authors = getActiveAuthors();
+export default async function ArtigosPage() {
+  const [authors, articles] = await Promise.all([
+    getActiveAuthors(),
+    getPublishedArticles(),
+  ]);
+  const allAuthors = await getAllAuthors();
+  const authorsBySlug = new Map(
+    allAuthors.map((author) => [author.slug, author]),
+  );
 
-  const items: CarouselArticle[] = getPublishedArticles().map((article) => {
-    const author = getAuthorBySlug(article.authorSlug);
+  const items: CarouselArticle[] = articles.map((article) => {
+    const author = authorsBySlug.get(article.authorSlug);
     return {
       slug: article.slug,
       title: article.title,
@@ -67,7 +74,13 @@ export default function ArtigosPage() {
               href={`/autores/${author.slug}`}
               className="flex w-24 shrink-0 flex-col items-center gap-2 text-center"
             >
-              <AuthorMark initials={author.initials} size={58} onDark />
+              <AuthorMark
+                initials={author.initials}
+                photoUrl={author.photoUrl}
+                name={author.name}
+                size={58}
+                onDark
+              />
               <span className="text-[10.5px] leading-snug font-semibold text-[#f7f4ea]/85">
                 {author.name}
               </span>

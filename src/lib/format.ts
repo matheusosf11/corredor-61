@@ -66,20 +66,37 @@ export function formatTime(iso: string) {
     .replace(":", "h");
 }
 
-export function bodyToText(
-  blocks: { type: string; text?: string; items?: string[] }[],
-) {
-  return blocks
-    .map((block) =>
-      block.type === "ul" ? (block.items ?? []).join(" ") : (block.text ?? ""),
-    )
-    .join(" ");
+export function initialsFromName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  const first = parts[0][0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? "") : "";
+  return (first + last).toUpperCase();
+}
+
+function blockToText(block: unknown): string {
+  if (!block || typeof block !== "object") return "";
+  const row = block as {
+    _type?: string;
+    type?: string;
+    text?: string;
+    items?: string[];
+    children?: { text?: string }[];
+  };
+  if (row._type === "block" && Array.isArray(row.children)) {
+    return row.children.map((child) => child.text ?? "").join("");
+  }
+  if (row.type === "ul") return (row.items ?? []).join(" ");
+  return row.text ?? "";
+}
+
+export function bodyToText(blocks: unknown) {
+  if (!Array.isArray(blocks)) return "";
+  return blocks.map(blockToText).join(" ");
 }
 
 /** Estimativa de tempo de leitura (~200 palavras/min), mínimo de 1 min */
-export function readingMinutes(
-  blocks: { type: string; text?: string; items?: string[] }[],
-) {
+export function readingMinutes(blocks: unknown) {
   const words = bodyToText(blocks).trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }

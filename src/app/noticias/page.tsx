@@ -23,7 +23,7 @@ export default async function NoticiasPage({ searchParams }: Props) {
     ? (params.categoria as CategorySlug)
     : undefined;
   const page = Number(params.page) || 1;
-  const result = getNewsPage(page, categoria);
+  const result = await getNewsPage(page, categoria);
 
   const hrefFor = (nextPage: number) => {
     const query = new URLSearchParams();

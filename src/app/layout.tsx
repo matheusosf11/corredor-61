@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -49,16 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${archivo.variable} ${sourceSerif.variable} ${plexMono.variable} h-full`}
     >
       <body className="min-h-full">
-        <a className="skip-link" href="#conteudo">
-          Ir para o conteúdo
-        </a>
-        <div className="flex min-h-full w-full flex-col bg-paper pb-[calc(56px_+_env(safe-area-inset-bottom))] md:pb-0">
-          <Header />
-          <main id="conteudo" className="flex-1">
-            {children}
-          </main>
-          <Footer />
-        </div>
+        <SiteChrome footer={<Footer />}>{children}</SiteChrome>
       </body>
     </html>
   );

@@ -8,24 +8,20 @@ import { CoverMedia } from "@/components/ui/CoverMedia";
 import { ReadingProgress } from "@/components/content/ReadingProgress";
 import { ShareRow } from "@/components/content/ShareRow";
 import { formatDate, readingMinutes } from "@/lib/format";
-import {
-  getArticleBySlug,
-  getAuthor,
-  getCategory,
-  getPublishedArticles,
-} from "@/lib/queries";
+import { getCategory } from "@/lib/categories";
+import { getArticleBySlug, getAllAuthors, getAuthor, getPublishedArticles } from "@/lib/queries";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateStaticParams() {
-  return getPublishedArticles().map((item) => ({ slug: item.slug }));
+  return (await getPublishedArticles()).map((item) => ({ slug: item.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const item = getArticleBySlug(slug);
+  const item = await getArticleBySlug(slug);
   if (!item) return { title: "Artigo não encontrado" };
   return {
     title: item.title,
@@ -41,11 +37,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArtigoPage({ params }: Props) {
   const { slug } = await params;
-  const item = getArticleBySlug(slug);
+  const item = await getArticleBySlug(slug);
   if (!item) notFound();
-  const author = getAuthor(item);
+  const author = await getAuthor(item);
+  const authors = await getAllAuthors();
+  const authorsBySlug = new Map(authors.map((row) => [row.slug, row]));
   const cat = item.category ? getCategory(item.category)?.name : "Opinião";
-  const others = getPublishedArticles()
+  const others = (await getPublishedArticles())
     .filter((a) => a.slug !== item.slug)
     .slice(0, 2);
 
@@ -73,7 +71,13 @@ export default async function ArtigoPage({ params }: Props) {
 
         <div className="flex flex-col gap-3 border-t border-gold/35 pt-5">
           <div className="flex items-center gap-3">
-            <AuthorMark initials={author.initials} size={56} onDark />
+            <AuthorMark
+              initials={author.initials}
+              photoUrl={author.photoUrl}
+              name={author.name}
+              size={56}
+              onDark
+            />
             <div className="flex flex-col gap-1">
               <span className="text-[15px] leading-tight font-bold text-[#f7f4ea]">
                 {author.name}
@@ -87,7 +91,7 @@ export default async function ArtigoPage({ params }: Props) {
             href={`/autores/${author.slug}`}
             className="eyebrow text-[10.5px] tracking-[0.14em] text-gold"
           >
-            Ver perfil da autora →
+            Ver perfil →
           </Link>
         </div>
       </header>
@@ -108,6 +112,8 @@ export default async function ArtigoPage({ params }: Props) {
         <div className="mx-auto mt-13 grid max-w-[63ch] gap-5 bg-cream p-7 sm:grid-cols-[84px_1fr]">
           <AuthorMark
             initials={author.initials}
+            photoUrl={author.photoUrl}
+            name={author.name}
             size={84}
             className="justify-self-start"
           />
@@ -137,7 +143,7 @@ export default async function ArtigoPage({ params }: Props) {
             </h2>
             <div className="grid gap-5 sm:grid-cols-2">
               {others.map((a) => {
-                const oa = getAuthor(a);
+                const oa = authorsBySlug.get(a.authorSlug);
                 return (
                   <Link
                     key={a.slug}
@@ -154,7 +160,7 @@ export default async function ArtigoPage({ params }: Props) {
                       {a.title}
                     </h3>
                     <span className="font-mono text-[10.5px] text-navy/50">
-                      {oa.name}
+                      {oa?.name}
                     </span>
                   </Link>
                 );

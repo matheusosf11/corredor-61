@@ -16,6 +16,9 @@ export type BodyBlock =
   | { type: "h2"; text: string }
   | { type: "ul"; items: string[] };
 
+/** Corpo do CMS (Portable Text) ou blocos estáticos do seed. */
+export type ContentBody = BodyBlock[] | unknown[];
+
 export type Cover = {
   alt: string;
   motif: CategorySlug | "opiniao";
@@ -30,13 +33,14 @@ export type Author = {
   bio: string;
   initials: string;
   active: boolean;
+  photoUrl?: string;
 };
 
 export type News = {
   slug: string;
   title: string;
   dek: string;
-  body: BodyBlock[];
+  body: ContentBody;
   cover: Cover;
   authorName: string;
   category: CategorySlug;
@@ -49,7 +53,7 @@ export type Article = {
   slug: string;
   title: string;
   dek: string;
-  body: BodyBlock[];
+  body: ContentBody;
   cover: Cover;
   authorSlug: string;
   category?: CategorySlug;
@@ -64,12 +68,14 @@ export type Supporter = {
   url?: string;
   order: number;
   active: boolean;
+  logoUrl?: string;
 };
 
 export type TeamMember = {
   name: string;
   role: string;
   bio: string;
+  photoUrl?: string;
 };
 
 export type AboutContent = {
