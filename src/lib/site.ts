@@ -1,6 +1,7 @@
 export const site = {
   name: "Corredor 61",
   shortName: "C61",
+  kicker: "Brasília por dentro.",
   tagline:
     "Portal de conteúdo técnico, jurídico, legislativo e político.",
   description:

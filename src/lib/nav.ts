@@ -16,86 +16,53 @@ export type NavItem = {
   groups?: NavGroup[];
 };
 
-export const primaryNav: NavItem[] = [
-  {
-    href: "/noticias",
-    label: "Notícias",
-    groups: [
-      {
-        heading: "Por tema",
-        items: [
-          { href: "/noticias", label: "Todas" },
-          { href: "/noticias?categoria=legislativo", label: "Legislativo" },
-          { href: "/noticias?categoria=judiciario", label: "Judiciário" },
-          { href: "/noticias?categoria=politica", label: "Política" },
-          { href: "/noticias?categoria=institucional", label: "Institucional" },
-        ],
-      },
-      {
-        heading: "Por região",
-        items: [
-          { href: "/noticias", label: "Brasília" },
-          { href: "/noticias", label: "São Paulo" },
-          { href: "/noticias", label: "Mundo" },
-        ],
-      },
-    ],
-  },
-  {
-    href: "/artigos",
-    label: "Artigos",
-    match: ["/artigos", "/autores"],
-    groups: [
-      {
-        heading: "Opinião",
-        items: [
-          { href: "/artigos", label: "Todos os artigos" },
-          { href: "/autores", label: "Autores" },
-        ],
-      },
-    ],
-  },
-  {
-    href: "/videos",
-    label: "Vídeos",
-    groups: [
-      {
-        heading: "Instagram",
-        items: [
-          { href: "/videos", label: "Podcasts e reels" },
-          {
-            href: "https://www.instagram.com/corredor61.br",
-            label: "Perfil @corredor61.br",
-            external: true,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    href: "/sobre",
-    label: "Portal",
-    match: ["/sobre", "/apoiadores"],
-    groups: [
-      {
-        heading: "Institucional",
-        items: [
-          { href: "/sobre", label: "Sobre nós" },
-          { href: "/apoiadores", label: "Apoiadores" },
-        ],
-      },
-    ],
-  },
+export const editorialNav: NavItem[] = [
+  { href: "/noticias", label: "Notícias" },
+  { href: "/noticias?categoria=politica", label: "Bastidores" },
+  { href: "/noticias?categoria=institucional", label: "Entenda" },
+  { href: "/artigos", label: "Opinião", match: ["/artigos"] },
+  { href: "/#poder", label: "Poder" },
+  { href: "/#economia", label: "Economia" },
 ];
 
-export function navItemIsActive(item: NavItem, pathname: string) {
-  const bases = item.match ?? [item.href];
+export const moreNav: NavItem[] = [
+  { href: "/videos", label: "Vídeos" },
+  { href: "/autores", label: "Autores" },
+  { href: "/sobre", label: "Sobre nós" },
+  { href: "/apoiadores", label: "Apoiadores" },
+];
+
+export const primaryNav: NavItem[] = [...editorialNav, ...moreNav];
+
+export function navItemIsActive(
+  item: NavItem,
+  pathname: string,
+  search = "",
+) {
+  const [rawPath, query] = item.href.split("?");
+  const path = rawPath.split("#")[0];
+  const params = new URLSearchParams(query ?? "");
+  const categoria = params.get("categoria");
+  const currentCategoria = new URLSearchParams(search).get("categoria");
+
+  if (path === "/noticias" && categoria) {
+    return pathname === "/noticias" && currentCategoria === categoria;
+  }
+
+  if (path === "/noticias") {
+    return pathname === "/noticias" && !currentCategoria;
+  }
+
+  const bases = item.match ?? [path];
   return bases.some(
-    (href) => pathname === href || pathname.startsWith(`${href}/`),
+    (href) =>
+      href !== "/" &&
+      href !== "" &&
+      (pathname === href || pathname.startsWith(`${href}/`)),
   );
 }
 
-/** CardNav só renderiza 3 cartões — o 4º item (Vídeos) entra em Artigos. */
+/** Mantido para a proposta A; a B não usa CardNav. */
 export const cardNavItems = [
   {
     label: "Notícias",

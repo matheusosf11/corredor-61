@@ -1,108 +1,95 @@
-import Link from "next/link";
-import { NewsCard } from "@/components/news/NewsItems";
-import { formatDate } from "@/lib/format";
-import { getCategory } from "@/lib/categories";
+import { takeNews } from "@/lib/editorial";
 import {
   getAllAuthors,
   getHomeArticles,
-  getHomeHeroNews,
-  getHomeNewsGrid,
+  getPublishedNews,
 } from "@/lib/queries";
-import { ArtigosList } from "./_components/ArtigosList";
-import { HeroCarousel } from "./_components/HeroCarousel";
+import { EditoriaRail } from "./_components/EditoriaRail";
+import { HomeHero } from "./_components/HomeHero";
+import { NewsletterBar } from "./_components/NewsletterBar";
+import { PoderBlock } from "./_components/PoderBlock";
+import { StoryTeaser } from "./_components/StoryTeaser";
 
 export default async function HomePage() {
-  const [heroNews, articles, authors] = await Promise.all([
-    getHomeHeroNews(5),
+  const [news, articles, authors] = await Promise.all([
+    getPublishedNews(),
     getHomeArticles(8),
     getAllAuthors(),
   ]);
-  const featured = heroNews[0];
-  const grid = featured ? await getHomeNewsGrid(featured.slug, 10) : [];
   const authorsBySlug = new Map(authors.map((author) => [author.slug, author]));
-
-  const artigoItems = articles.map((item) => {
-    const author = authorsBySlug.get(item.authorSlug);
-    return {
-      slug: item.slug,
-      title: item.title,
-      authorName: author?.name ?? "",
-      authorRole: author?.role ?? "",
-      dateLabel: formatDate(item.publishedAt),
-      authorPhotoUrl: author?.photoUrl,
-    };
-  });
-
-  const heroSlides = heroNews.map((item) => ({
-    slug: item.slug,
-    title: item.title,
-    dek: item.dek,
-    cover: item.cover,
-    categoryName: getCategory(item.category)?.name ?? "",
-    authorName: item.authorName,
-    dateLabel: formatDate(item.publishedAt),
-  }));
+  const used = new Set<string>();
+  const hero = takeNews(news, used);
+  const bastidores = takeNews(news, used, "politica");
+  const entenda = takeNews(news, used, "institucional");
+  const opiniao = articles[0];
+  const congresso = takeNews(news, used, "legislativo");
+  const executivo = takeNews(news, used, "institucional");
+  const judiciario = takeNews(news, used, "judiciario");
+  const opiniaoAuthor = opiniao
+    ? authorsBySlug.get(opiniao.authorSlug)
+    : undefined;
 
   return (
-    <div>
+    <div className="bg-white">
       <h1 className="sr-only">
-        Corredor 61 — notícias e artigos sobre política, direito e legislação
+        Corredor 61 — Brasília por dentro, notícias e artigos sobre política,
+        direito e legislação
       </h1>
 
-      {/* Sessão do destaque — carrossel + coluna de artigos */}
-      <div className="pad-x lg:grid lg:grid-cols-[minmax(0,1fr)_clamp(320px,25vw,380px)] lg:items-stretch lg:gap-x-10">
-        {heroSlides.length > 0 ? (
-          <HeroCarousel items={heroSlides} />
-        ) : (
-          <div className="flex min-h-[280px] items-center bg-navy px-8 py-16">
-            <p className="font-serif text-[18px] text-cream/80">
-              As primeiras notícias aparecem aqui assim que forem publicadas no
-              estúdio.
-            </p>
-          </div>
-        )}
+      <div className="pad-x py-5 lg:py-6">
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)] lg:gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
+            {hero ? (
+              <HomeHero item={hero} />
+            ) : (
+              <div className="flex min-h-[280px] items-center bg-[#0b1730] px-8 py-16">
+                <p className="font-serif text-[18px] text-cream/80">
+                  As primeiras notícias aparecem aqui assim que forem publicadas
+                  no estúdio.
+                </p>
+              </div>
+            )}
 
-        <aside className="mt-8 mb-4 flex flex-col lg:mt-10 lg:mb-0 lg:self-stretch">
-          <div className="mb-3 flex items-baseline justify-between border-b border-navy/15 pb-2">
-            <h2 className="nav-link text-[12.5px] text-gold-ink">Artigos</h2>
-            <Link
-              href="/artigos"
-              className="nav-link text-[12.5px] text-gold-ink hover:text-navy"
-            >
-              Ver todos →
-            </Link>
-          </div>
-          <div className="min-h-0 flex-1">
-            <ArtigosList items={artigoItems} />
-          </div>
-        </aside>
-      </div>
+            <div className="grid gap-5 sm:grid-cols-3">
+              {bastidores ? (
+                <StoryTeaser
+                  href={`/noticias/${bastidores.slug}`}
+                  eyebrow="Bastidores"
+                  title={bastidores.title}
+                  cover={bastidores.cover}
+                />
+              ) : null}
+              {entenda ? (
+                <StoryTeaser
+                  href={`/noticias/${entenda.slug}`}
+                  eyebrow="Entenda"
+                  title={entenda.title}
+                  cover={entenda.cover}
+                />
+              ) : null}
+              {opiniao ? (
+                <StoryTeaser
+                  href={`/artigos/${opiniao.slug}`}
+                  eyebrow="Opinião"
+                  title={opiniao.title}
+                  cover={opiniao.cover}
+                  cta={`Por ${opiniaoAuthor?.name ?? "Redação"} →`}
+                />
+              ) : null}
+            </div>
 
-      {/* Sessão de notícias — largura total */}
-      <section className="pad-x py-12 lg:py-14">
-        <div className="mb-8 flex items-end justify-between border-b-2 border-navy pb-3">
-          <h2 className="text-[26px] font-extrabold tracking-[-0.02em] text-navy md:text-[30px]">
-            Notícias
-          </h2>
-          <Link
-            href="/noticias"
-            className="nav-link text-[12px] text-gold-ink hover:text-navy"
-          >
-            Ver todas →
-          </Link>
+            <PoderBlock
+              congresso={congresso}
+              executivo={executivo}
+              judiciario={judiciario}
+            />
+
+            <NewsletterBar />
+          </div>
+
+          <EditoriaRail />
         </div>
-        {grid.length === 0 ? (
-          <p className="py-10 font-serif text-[15px] text-navy/60">
-            Nenhuma matéria publicada por enquanto.
-          </p>
-        ) : (
-          <div className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-            {grid.map((item) => (
-              <NewsCard key={item.slug} item={item} />
-            ))}
-          </div>
-        )}
-      </section>
+      </div>
     </div>
   );
 }
