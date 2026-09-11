@@ -24,7 +24,7 @@ export function AuthorMark({
         alt={name ? `Foto de ${name}` : ""}
         width={size}
         height={size}
-        className={`inline-block shrink-0 rounded-full object-cover ${className}`}
+        className={`inline-block shrink-0 rounded-full object-cover object-top ${className}`}
         style={{ width: size, height: size }}
       />
     );

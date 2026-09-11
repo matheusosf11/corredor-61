@@ -7,6 +7,7 @@ import { SupporterLogo } from "@/components/supporters/SupportersBand";
 const footerNav = [
   { href: "/noticias", label: "Notícias" },
   { href: "/artigos", label: "Artigos" },
+  { href: "/videos", label: "Vídeos" },
   { href: "/autores", label: "Autores" },
   { href: "/sobre", label: "Sobre Nós" },
   { href: "/apoiadores", label: "Apoiadores" },

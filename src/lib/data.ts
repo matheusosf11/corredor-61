@@ -22,6 +22,7 @@ export const authors: Author[] = [
     bio: "Atua em direito público e processo legislativo. Escreve sobre rito, comissões e segurança jurídica das normas.",
     initials: "AR",
     active: true,
+    photoUrl: "/authors/ana-ribeiro.jpg",
   },
   {
     slug: "carlos-mendes",
@@ -30,6 +31,7 @@ export const authors: Author[] = [
     bio: "Dedica-se a accountability, tribunais de contas e desenho institucional da administração pública.",
     initials: "CM",
     active: true,
+    photoUrl: "/authors/carlos-mendes.jpg",
   },
   {
     slug: "helena-costa",
@@ -38,6 +40,7 @@ export const authors: Author[] = [
     bio: "Estuda regulação de dados, transparência e o uso de informação no Estado.",
     initials: "HC",
     active: true,
+    photoUrl: "/authors/helena-costa.jpg",
   },
   {
     slug: "paulo-andrade",
@@ -675,30 +678,30 @@ export const supporters: Supporter[] = [
 ];
 
 export const about: AboutContent = {
-  title: "Sobre o Corredor 61",
+  title: "Sobre nós",
   proposal:
-    "O Corredor 61 é um portal de conteúdo técnico, jurídico, legislativo e político. A proposta é reunir notícias da equipe e artigos de especialistas convidados — políticos, técnicos, ministros, conselheiros e autoridades — em um ambiente com identidade institucional própria, ligada a Brasília e ao debate público.",
+    "O Corredor 61 é um portal de conteúdo técnico, jurídico, legislativo e político que nasce com a proposta de conectar informação, análise e experiência prática sobre os principais temas que movimentam o poder público e o debate nacional.",
+  intro: [
+    "Mais do que um portal de notícias, o Corredor 61 reúne uma rede de especialistas que vivem a política e acompanham de perto a construção das decisões. Juristas, especialistas, autoridades, cientistas políticos, profissionais do setor público e convidados com reconhecida experiência contribuem com análises, artigos e informações qualificadas sobre o cenário brasileiro.",
+    "O projeto também se diferencia pela articulação com os bastidores do poder, acompanhando de perto as discussões, negociações e decisões que acontecem nas três esferas dos entes federativos (União, Estados e Municípios) e nos diferentes Poderes e instituições públicas.",
+    "O nome Corredor 61 remete a Brasília e ao ambiente institucional que conecta o debate público ao Congresso Nacional, ao Executivo, ao Judiciário e aos demais órgãos e instituições que participam da construção das políticas e decisões que impactam o país.",
+    "A proposta é oferecer um endereço permanente para conteúdos que hoje estão dispersos entre redes sociais, assessorias, veículos especializados e meios de comunicação generalistas, reunindo em um mesmo ambiente informação, opinião qualificada e conhecimento técnico.",
+  ],
   objectives: [
-    "Publicar notícias com regularidade sobre o cenário político, jurídico e legislativo.",
-    "Oferecer endereço permanente a artigos aprofundados e opinativos de convidados.",
-    "Manter tom de credibilidade, seriedade e autoridade, com navegação moderna.",
-    "Expor apoiadores institucionais sem linguagem de anúncio ou publicidade.",
+    "Informar: publicar notícias e informações com regularidade sobre os cenários político, jurídico e legislativo, com foco no que efetivamente influencia a tomada de decisões.",
+    "Analisar: oferecer artigos, análises e conteúdos aprofundados produzidos por especialistas e convidados que conhecem, na prática, os temas sobre os quais escrevem.",
+    "Conectar: aproximar o leitor dos ambientes onde as decisões são discutidas, construídas e negociadas, traduzindo os movimentos dos bastidores para o debate público.",
+    "Reunir especialistas: formar uma equipe e uma rede de colaboradores composta por juristas, cientistas políticos, especialistas, autoridades, técnicos e profissionais com experiência direta na vida pública e institucional brasileira.",
+    "Dar contexto: ir além da notícia factual, apresentando os diferentes aspectos técnicos, jurídicos, políticos e institucionais que envolvem cada tema.",
+    "Construir credibilidade: manter uma identidade editorial marcada por seriedade, independência, conhecimento técnico e autoridade, com linguagem acessível e navegação moderna.",
+    "Valorizar parceiros institucionais: dar visibilidade a apoiadores e parceiros de forma orgânica e institucional, sem transformar o conteúdo editorial em publicidade convencional.",
   ],
-  people: [
-    {
-      name: "Coordenação editorial",
-      role: "Redação · Brasília, DF",
-      bio: "Define a pauta, edita e publica as notícias do portal. Faz a ponte com autores convidados e cuida do padrão institucional do Corredor 61.",
-    },
-    {
-      name: "Edição de conteúdo",
-      role: "Texto e revisão",
-      bio: "Formata os artigos recebidos por especialistas, revisa a linguagem e prepara títulos, linhas finas e material de capa.",
-    },
-    {
-      name: "Colunistas convidados",
-      role: "Contribuição externa",
-      bio: "Políticos, técnicos, conselheiros e advogados que assinam artigos. Não operam o painel: enviam os textos e a equipe publica.",
-    },
+  whoMakes: [
+    "O Corredor 61 é construído por uma equipe multidisciplinar de especialistas e profissionais que conhecem de perto a dinâmica do poder público e a tomada de decisões no Brasil.",
+    "São profissionais que não apenas acompanham a política: vivem o ambiente institucional, participam das discussões, interpretam cenários e acompanham os processos decisórios de perto.",
+    "A equipe reúne diferentes olhares e experiências. Do jurídico ao político. Do técnico ao institucional. A alternância de colaboradores permite que o portal ofereça conteúdo com profundidade, contexto e credibilidade.",
+    "Ao lado da equipe permanente, o Corredor 61 contará com colaboradores convidados, entre juristas, autoridades, cientistas políticos, especialistas, técnicos, gestores públicos e personalidades com atuação relevante nos temas em debate.",
+    "Essa combinação entre informação, conhecimento técnico, experiência institucional e articulação é o que pretende fazer do Corredor 61 um espaço diferenciado para quem quer compreender não apenas o que está acontecendo, mas também por que está acontecendo, quem está discutindo e quais decisões podem surgir a partir disso.",
   ],
+  people: [],
 };

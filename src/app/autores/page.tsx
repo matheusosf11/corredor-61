@@ -29,7 +29,7 @@ export default async function AutoresPage() {
         title="Autores"
         description="Políticos, técnicos, conselheiros, advogados e autoridades convidadas que assinam artigos no Corredor 61."
       />
-      <div className="pad-x bg-white py-14">
+      <div className="pad-x bg-navy py-14">
         <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-7 lg:grid-cols-4 2xl:grid-cols-6">
           {authors.map((author) => {
             const count = countByAuthor.get(author.slug) ?? 0;

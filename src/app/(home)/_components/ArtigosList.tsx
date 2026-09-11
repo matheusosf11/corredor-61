@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import AnimatedList from "./AnimatedList";
+import { AuthorMark } from "@/components/ui/AuthorMark";
 
 export type ArtigoItem = {
   slug: string;
@@ -9,6 +10,7 @@ export type ArtigoItem = {
   authorName: string;
   authorRole: string;
   dateLabel: string;
+  authorPhotoUrl?: string;
 };
 
 function initials(name: string) {
@@ -33,12 +35,14 @@ export function ArtigosList({ items }: { items: ArtigoItem[] }) {
           className="group flex items-start gap-3.5"
           aria-label={`${a.title} — por ${a.authorName}`}
         >
-          <span
-            aria-hidden
-            className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-cream/25 font-mono text-[12px] tracking-[0.04em] text-cream/80"
-          >
-            {initials(a.authorName)}
-          </span>
+          <AuthorMark
+            initials={initials(a.authorName)}
+            photoUrl={a.authorPhotoUrl}
+            name={a.authorName}
+            size={44}
+            onDark
+            className="mt-0.5"
+          />
           <span className="min-w-0 flex-1">
             <span className="block font-serif text-[14px] leading-snug text-cream/90 group-hover:text-cream text-pretty">
               {a.title}

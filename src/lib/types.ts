@@ -81,7 +81,9 @@ export type TeamMember = {
 export type AboutContent = {
   title: string;
   proposal: string;
+  intro: string[];
   objectives: string[];
+  whoMakes: string[];
   people: TeamMember[];
 };
 

@@ -203,8 +203,14 @@ export async function getActiveSupporters(): Promise<Supporter[]> {
 
 export async function getAbout(): Promise<AboutContent> {
   const row = await cmsFetch<AboutContent | null>(aboutQuery);
-  if (row?.proposal) return row;
-  return about;
+  if (!row?.proposal) return about;
+  return {
+    ...about,
+    ...row,
+    intro: row.intro?.length ? row.intro : [],
+    whoMakes: row.whoMakes?.length ? row.whoMakes : [],
+    people: row.people ?? [],
+  };
 }
 
 export async function searchContent(query: string): Promise<SearchHit[]> {

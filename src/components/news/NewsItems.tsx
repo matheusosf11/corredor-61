@@ -14,22 +14,48 @@ function catName(item: News) {
 }
 
 /** Cartão de notícia com imagem no topo — grade da home. */
-export function NewsCard({ item }: { item: News }) {
+export function NewsCard({
+  item,
+  onDark = false,
+}: {
+  item: News;
+  onDark?: boolean;
+}) {
   return (
     <Link href={`/noticias/${item.slug}`} className="group flex flex-col">
-      <div className="aspect-[3/2] overflow-hidden rounded-lg border border-navy/10">
+      <div
+        className={`aspect-[3/2] overflow-hidden rounded-lg border ${
+          onDark ? "border-cream/15" : "border-navy/10"
+        }`}
+      >
         <CoverMedia
           cover={item.cover}
           className="transition-transform duration-500 group-hover:scale-[1.04]"
         />
       </div>
-      <span className="mt-4 text-[13px] lowercase text-navy/45">
+      <span
+        className={`mt-4 text-[15px] lowercase transition-colors ${
+          onDark
+            ? "text-cream/70 group-hover:text-gold"
+            : "text-navy group-hover:text-gold-ink"
+        }`}
+      >
         {catName(item)}
       </span>
-      <h3 className="mt-1.5 line-clamp-2 text-[20px] leading-[1.15] font-extrabold tracking-[-0.01em] text-navy transition-colors group-hover:text-gold-ink md:text-[22px]">
+      <h3
+        className={`mt-1.5 line-clamp-2 text-[20px] leading-[1.15] font-extrabold tracking-[-0.01em] transition-colors md:text-[22px] ${
+          onDark
+            ? "text-cream group-hover:text-gold"
+            : "text-navy group-hover:text-gold-ink"
+        }`}
+      >
         {item.title}
       </h3>
-      <span className="mt-3 text-[13px] text-navy/45">
+      <span
+        className={`mt-3 text-[13px] ${
+          onDark ? "text-cream/50" : "text-navy/45"
+        }`}
+      >
         {formatFullDate(item.publishedAt)}
       </span>
     </Link>

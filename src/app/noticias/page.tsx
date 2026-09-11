@@ -52,15 +52,15 @@ export default async function NoticiasPage({ searchParams }: Props) {
         }
       />
 
-      <div className="pad-x bg-white pt-8 pb-14">
+      <div className="pad-x bg-navy pt-10 pb-14">
         {result.items.length === 0 ? (
-          <p className="py-16 text-center font-serif text-[15px] text-navy/60">
+          <p className="py-16 text-center font-serif text-[15px] text-cream/60">
             Nenhuma matéria publicada nesta categoria por enquanto.
           </p>
         ) : (
           <div className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {result.items.map((item) => (
-              <NewsCard key={item.slug} item={item} />
+              <NewsCard key={item.slug} item={item} onDark />
             ))}
           </div>
         )}
@@ -69,6 +69,7 @@ export default async function NoticiasPage({ searchParams }: Props) {
           page={result.page}
           totalPages={result.totalPages}
           hrefFor={hrefFor}
+          onDark
         />
       </div>
     </div>
@@ -88,8 +89,8 @@ function FilterChip({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`nav-link text-[11px] whitespace-nowrap transition-colors ${
-        active ? "text-gold" : "text-cream/70 hover:text-gold"
+      className={`nav-link text-[13px] whitespace-nowrap transition-colors md:text-[14px] ${
+        active ? "text-gold" : "text-navy hover:text-gold"
       }`}
     >
       {label}

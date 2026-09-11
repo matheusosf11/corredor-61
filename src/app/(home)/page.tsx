@@ -29,6 +29,7 @@ export default async function HomePage() {
       authorName: author?.name ?? "",
       authorRole: author?.role ?? "",
       dateLabel: formatDate(item.publishedAt),
+      authorPhotoUrl: author?.photoUrl,
     };
   });
 

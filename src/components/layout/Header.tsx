@@ -5,21 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { cardNavItems } from "@/lib/nav";
 import { site } from "@/lib/site";
-
-const nav = [
-  { href: "/noticias", label: "Notícias" },
-  { href: "/artigos", label: "Artigos" },
-  { href: "/autores", label: "Autores" },
-  { href: "/sobre", label: "Sobre" },
-];
-
-const categorias = [
-  { href: "/noticias?categoria=legislativo", label: "Legislativo" },
-  { href: "/noticias?categoria=judiciario", label: "Judiciário" },
-  { href: "/noticias?categoria=politica", label: "Política" },
-  { href: "/noticias?categoria=institucional", label: "Institucional" },
-];
+import CardNav from "./CardNav";
+import { MobileNav } from "./DesktopNav";
 
 function useActive() {
   const pathname = usePathname();
@@ -27,28 +16,56 @@ function useActive() {
     pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function DesktopLink({
-  href,
-  label,
-  active,
-}: {
-  href: string;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={`nav-link px-[20px] py-3 text-[12.5px] whitespace-nowrap ${
-        active
-          ? "text-gold-ink shadow-[inset_0_-3px_0_#c9a044]"
-          : "text-navy hover:text-gold-ink"
-      }`}
-    >
-      {label}
-    </Link>
-  );
+/* ---------- Data por extenso (barra utilitária do topo) ---------- */
+
+const mastheadTz = "America/Sao_Paulo";
+
+const dateFmt = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+  timeZone: mastheadTz,
+});
+
+const timeFmt = new Intl.DateTimeFormat("pt-BR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+  timeZone: mastheadTz,
+});
+
+function useTodayLabel() {
+  const [label, setLabel] = useState<string | null>(null);
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setLabel(`${dateFmt.format(now)} · ${timeFmt.format(now)}`);
+    };
+    tick();
+    const msToNextMinute = 60_000 - (Date.now() % 60_000) + 50;
+    let intervalId: number | undefined;
+    const timeoutId = window.setTimeout(() => {
+      tick();
+      intervalId = window.setInterval(tick, 60_000);
+    }, msToNextMinute);
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, []);
+  return label;
+}
+
+function useScrolled(threshold = 16) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
 }
 
 /* ---------- Ícones da tab bar (mobile) ---------- */
@@ -124,13 +141,41 @@ function MobileTab({
       href={href}
       aria-current={active ? "page" : undefined}
       className={`flex flex-1 flex-col items-center justify-center gap-1 py-2 ${
-        active ? "text-gold-ink" : "text-navy/60"
+        active ? "text-gold" : "text-cream/70"
       }`}
     >
       {children}
       <span className="font-sans text-[9px] font-bold tracking-[0.06em] uppercase">
         {label}
       </span>
+    </Link>
+  );
+}
+
+function MobileBrand({ onClick }: { onClick?: () => void }) {
+  return (
+    <Link
+      href="/"
+      onClick={onClick}
+      aria-label={`${site.name} — página inicial`}
+      className="flex items-center justify-center gap-2.5"
+    >
+      <Image
+        src="/marca-corredor61.png"
+        alt=""
+        width={48}
+        height={44}
+        priority
+        className="h-[40px] w-auto"
+      />
+      <Image
+        src="/wordmark-corredor61.svg"
+        alt={site.name}
+        width={188}
+        height={40}
+        priority
+        className="h-[32px] w-auto"
+      />
     </Link>
   );
 }
@@ -146,7 +191,8 @@ export function Header() {
   const isActive = useActive();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const buscaActive = pathname.startsWith("/busca");
+  const todayLabel = useTodayLabel();
+  const scrolled = useScrolled();
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -160,64 +206,159 @@ export function Header() {
     href === "/" ? pathname === "/" : isActive(href);
 
   return (
-    <header className="sticky top-0 z-40 bg-cream">
-      <div className="h-[6px] w-full bg-blackish" />
+    <header className="bg-cream">
+      {/* ============================================================
+          Desktop — modelo 15a: marinho profundo, malha de réguas,
+          nome grande ao centro e menu numerado com régua dourada
+          ============================================================ */}
 
-      {/* ---------- Desktop ---------- */}
-      <div className="pad-x hidden pt-4 pb-1 md:flex md:flex-col md:items-center">
-        <Link
-          href="/"
-          aria-label={`${site.name} — página inicial`}
-          className="block"
+      {/* Barra utilitária — fica fixa no topo ao rolar (só desktop) */}
+      <div
+        className={`pad-x fixed inset-x-0 top-0 z-40 hidden transition-colors duration-300 md:block ${
+          scrolled
+            ? "bg-cream shadow-[0_10px_24px_-16px_rgba(16,31,60,0.35)]"
+            : "bg-[#0b1730]"
+        }`}
+        style={{
+          backgroundImage: scrolled
+            ? "linear-gradient(90deg, rgba(16,31,60,0.08) 1px, transparent 1px)"
+            : "linear-gradient(90deg, rgba(244,240,228,0.055) 1px, transparent 1px)",
+          backgroundSize: "78px 100%",
+        }}
+      >
+        <div
+          className={`flex items-center justify-between py-3 transition-colors duration-300 ${
+            scrolled ? "border-b border-navy/12" : "border-b border-cream/10"
+          }`}
         >
-          <Image
-            src="/logo-corredor61.svg"
-            alt={site.name}
-            width={150}
-            height={150}
-            priority
-            className="h-[92px] w-auto lg:h-[104px]"
-          />
-        </Link>
-        <nav
-          aria-label="Principal"
-          className="mt-4 flex w-full items-stretch justify-center border-t-2 border-navy border-b border-b-navy/15"
-        >
-          {nav.map((item, index) => (
-            <div key={item.href} className="flex items-center">
-              {index > 0 ? (
-                <span className="h-3.5 w-px self-center bg-navy/25" />
-              ) : null}
-              <DesktopLink
-                href={item.href}
-                label={item.label}
-                active={isActive(item.href)}
-              />
-            </div>
-          ))}
-          <span className="h-3.5 w-px self-center bg-navy/25" />
-          <DesktopLink href="/busca" label="Buscar ⌕" active={buscaActive} />
-        </nav>
+          <Link
+            href="/busca"
+            className={`inline-flex items-center gap-[34px] rounded-[2px] border px-[14px] py-[10px] transition-colors ${
+              scrolled
+                ? "border-navy/25 hover:border-gold-ink"
+                : "border-cream/25 hover:border-gold/70"
+            }`}
+          >
+            <span
+              className={`font-sans text-[11px] leading-none font-bold tracking-[0.15em] uppercase transition-colors ${
+                scrolled ? "text-navy" : "text-cream/80"
+              }`}
+            >
+              Buscar
+            </span>
+            <span
+              aria-hidden
+              className={`text-[12px] leading-none transition-colors ${
+                scrolled ? "text-navy/50" : "text-cream/60"
+              }`}
+            >
+              ⌕
+            </span>
+          </Link>
+
+          <span
+            className={`flex items-center gap-[10px] font-sans text-[11px] leading-none font-bold tracking-[0.15em] uppercase transition-colors ${
+              scrolled ? "text-navy" : "text-cream/80"
+            }`}
+          >
+            <span
+              aria-hidden
+              className="h-[6px] w-[6px] rounded-full bg-gold shadow-[0_0_0_3px_rgba(201,160,68,0.22)]"
+            />
+            <span suppressHydrationWarning>
+              Brasília{todayLabel ? ` · ${todayLabel}` : ""}
+            </span>
+          </span>
+
+          <a
+            href={site.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`font-sans text-[11px] leading-none font-bold tracking-[0.15em] text-gold uppercase transition-colors ${
+              scrolled ? "hover:text-navy" : "hover:text-cream"
+            }`}
+          >
+            Instagram ↗
+          </a>
+        </div>
       </div>
 
-      {/* ---------- Mobile: faixa superior com a logo ---------- */}
-      <div className="flex justify-center border-b border-navy/15 py-2.5 md:hidden">
-        <Link href="/" aria-label={`${site.name} — página inicial`}>
-          <Image
-            src="/logo-corredor61.svg"
-            alt={site.name}
-            width={72}
-            height={72}
-            priority
-            className="h-[52px] w-auto"
-          />
-        </Link>
+      {/* Marca + menu — rolam normalmente com a página
+          (mt compensa a barra utilitária, que agora é fixed) */}
+      <div
+        className="pad-x relative z-30 hidden bg-[#0b1730] md:mt-[59px] md:block"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgba(244,240,228,0.055) 1px, transparent 1px)",
+          backgroundSize: "78px 100%",
+        }}
+      >
+        {/* Marca ao centro, entre réguas douradas */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 pt-[34px] pb-[30px]">
+          <span aria-hidden />
+          <Link
+            href="/"
+            aria-label={`${site.name} — página inicial`}
+            className="relative flex items-center gap-[18px]"
+          >
+            <span
+              aria-hidden
+              className="absolute top-1/2 left-[-34px] h-px w-[22px] bg-gold/55"
+            />
+            <Image
+              src="/marca-corredor61.png"
+              alt=""
+              width={84}
+              height={84}
+              priority
+              className="h-[84px] w-auto"
+            />
+            <Image
+              src="/wordmark-corredor61.svg"
+              alt={site.name}
+              width={402}
+              height={86}
+              priority
+              className="h-[86px] w-auto"
+            />
+            <span
+              aria-hidden
+              className="absolute top-1/2 right-[-34px] h-px w-[22px] bg-gold/55"
+            />
+          </Link>
+          <span aria-hidden />
+        </div>
+
+        <CardNav
+          items={cardNavItems}
+          baseColor="#f4f0e4"
+          menuColor="#0b1730"
+          buttonBgColor="#c9a044"
+          buttonTextColor="#0b1730"
+          buttonLabel="Buscar"
+          buttonHref="/busca"
+        />
       </div>
 
-      {/* ---------- Mobile: tab bar inferior (estilo app) ---------- */}
+      {/* Régua dourada que fecha o topo (desktop) */}
+      <div className="pointer-events-none hidden h-[3px] bg-[linear-gradient(90deg,#c9a044,rgba(201,160,68,0))] md:block" />
+
+      {/* ============================================================
+          Mobile — marca + wordmark no topo, tab bar inferior (azul)
+          ============================================================ */}
+      <div className="fixed inset-x-0 top-0 z-40 bg-[#0b1730] md:hidden">
+        <div className="flex justify-center px-4 py-2.5">
+          <MobileBrand />
+        </div>
+        <div className="h-[2px] bg-[linear-gradient(90deg,#c9a044,rgba(201,160,68,0.35))]" />
+      </div>
+      {/* Espaçador que compensa a faixa mobile fixed */}
+      <div aria-hidden className="h-[66px] md:hidden" />
+
+      {/* Mobile: tab bar inferior */}
       <nav
         aria-label="Navegação"
-        className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t border-navy/15 bg-cream pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_-8px_rgba(16,31,60,0.25)] md:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 flex items-stretch border-t border-cream/15 bg-[#0b1730] pb-[env(safe-area-inset-bottom)] md:hidden"
       >
         {mobileTabs.map((tab) => (
           <MobileTab
@@ -235,7 +376,7 @@ export function Header() {
           aria-label="Abrir menu"
           aria-expanded={menuOpen}
           className={`flex flex-1 flex-col items-center justify-center gap-1 py-2 ${
-            menuOpen ? "text-gold-ink" : "text-navy/60"
+            menuOpen ? "text-gold" : "text-cream/70"
           }`}
         >
           <IconMenu />
@@ -245,26 +386,20 @@ export function Header() {
         </button>
       </nav>
 
-      {/* ---------- Menu mobile aberto ---------- */}
+      {/* Mobile: menu aberto */}
       {menuOpen ? (
         <div className="fixed inset-0 z-[60] flex flex-col bg-navy md:hidden">
-          <div className="grid grid-cols-[44px_1fr_44px] items-center border-b border-white/10 bg-cream px-3 py-2.5">
+          <div className="grid grid-cols-[44px_1fr_44px] items-center border-b border-cream/15 bg-[#0b1730] px-3 py-2.5">
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
               aria-label="Fechar menu"
-              className="flex h-11 w-11 items-center justify-center text-[22px] text-navy"
+              className="flex h-11 w-11 items-center justify-center text-[22px] text-cream"
             >
               ×
             </button>
             <span className="flex justify-center">
-              <Image
-                src="/logo-corredor61.svg"
-                alt={site.name}
-                width={62}
-                height={62}
-                className="h-[52px] w-auto"
-              />
+              <MobileBrand onClick={closeMenu} />
             </span>
             <span />
           </div>
@@ -291,35 +426,7 @@ export function Header() {
               />
             </form>
 
-            <div className="flex flex-col">
-              {nav.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenu}
-                  className="nav-link flex items-center justify-between border-b border-cream/15 py-4 text-[22px] tracking-[0.02em] text-[#f7f4ea]"
-                >
-                  {item.label === "Sobre" ? "Sobre Nós" : item.label}
-                  <span className="text-gold">→</span>
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-7 flex flex-col gap-0.5 border-t border-gold/30 pt-4.5">
-              <span className="eyebrow mb-1.5 text-[9.5px] text-gold">
-                Categorias
-              </span>
-              {categorias.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={closeMenu}
-                  className="py-2.5 font-sans text-sm text-cream/80"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
+            <MobileNav onNavigate={closeMenu} />
 
             <a
               href={site.instagram}

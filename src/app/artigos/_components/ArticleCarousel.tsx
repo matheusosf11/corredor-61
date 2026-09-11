@@ -14,29 +14,13 @@ export type CarouselArticle = {
   category: string;
   authorName: string;
   authorInitials: string;
+  authorPhotoUrl?: string;
   dateLabel: string;
   minutes: number;
 };
 
 /** Artigos por slide: 1 destaque grande + 6 menores. */
 const SLIDE_SIZE = 7;
-
-function Arrow({ flip = false }: { flip?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={`h-4 w-4 ${flip ? "rotate-180" : ""}`}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
 
 function FeaturedCard({ article }: { article: CarouselArticle }) {
   return (
@@ -62,7 +46,13 @@ function FeaturedCard({ article }: { article: CarouselArticle }) {
           {article.dek}
         </p>
         <div className="mt-1.5 flex items-center gap-2.5 border-t border-[#f7f4ea]/15 pt-4">
-          <AuthorMark initials={article.authorInitials} size={34} onDark />
+          <AuthorMark
+            initials={article.authorInitials}
+            photoUrl={article.authorPhotoUrl}
+            name={article.authorName}
+            size={34}
+            onDark
+          />
           <span className="eyebrow text-[11.5px] tracking-[0.05em] text-[#f7f4ea]">
             {article.authorName}
           </span>
@@ -88,7 +78,12 @@ function Card({ article }: { article: CarouselArticle }) {
         {article.dek}
       </p>
       <div className="mt-auto flex items-center gap-2.5 border-t border-navy/12 pt-3.5">
-        <AuthorMark initials={article.authorInitials} size={30} />
+        <AuthorMark
+          initials={article.authorInitials}
+          photoUrl={article.authorPhotoUrl}
+          name={article.authorName}
+          size={30}
+        />
         <div className="flex flex-col gap-0.5">
           <span className="eyebrow text-[11px] tracking-[0.05em] text-navy">
             {article.authorName}
@@ -182,24 +177,27 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
       </div>
 
       {hasLoop ? (
-        <div className="mt-10 flex items-center justify-end gap-1.5">
+        <nav
+          aria-label="Mais artigos"
+          className="mt-10 flex items-center justify-end"
+        >
           <button
             type="button"
             onClick={() => move(-1)}
             aria-label="Artigos anteriores"
-            className="grid h-8 w-8 place-items-center border border-navy/20 text-navy/55 transition-colors hover:border-navy/50 hover:text-navy"
+            className="relative inline-flex h-8 items-center justify-center border border-cream/30 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-cream/80 uppercase transition-colors hover:border-gold hover:text-gold"
           >
-            <Arrow flip />
+            ← Anterior
           </button>
           <button
             type="button"
             onClick={() => move(1)}
             aria-label="Ver mais artigos"
-            className="grid h-8 w-8 place-items-center border border-navy/20 text-navy/55 transition-colors hover:border-navy/50 hover:text-navy"
+            className="relative -ml-px inline-flex h-8 items-center justify-center border border-cream/30 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-cream/80 uppercase transition-colors hover:border-gold hover:text-gold"
           >
-            <Arrow />
+            Ver mais →
           </button>
-        </div>
+        </nav>
       ) : null}
     </div>
   );

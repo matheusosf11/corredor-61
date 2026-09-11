@@ -23,12 +23,13 @@
 @layer base {
   :root {
     /* altura do cabeçalho fixo (mobile: faixa da logo) */
-    --header-h: 78px;
+    --header-h: 66px;
   }
 
   @media (min-width: 768px) {
     :root {
-      --header-h: 192px;
+      /* só a barra utilitária do topo fica fixa ao rolar */
+      --header-h: 59px;
     }
   }
 
