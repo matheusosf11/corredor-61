@@ -6,6 +6,10 @@ import { SupporterLogo } from "@/components/supporters/SupportersBand";
 
 const footerNav = [
   { href: "/noticias", label: "Notícias" },
+  { href: "/mundo", label: "Mundo" },
+  { href: "/brasil", label: "Brasil" },
+  { href: "/cidades", label: "Cidades" },
+  { href: "/bastidores", label: "Bastidores" },
   { href: "/artigos", label: "Artigos" },
   { href: "/videos", label: "Vídeos" },
   { href: "/autores", label: "Autores" },
@@ -30,23 +34,6 @@ export async function Footer() {
 
   return (
     <footer>
-      {/* Faixa de apoiadores */}
-      <div className="pad-x border-t border-navy/15 bg-cream pt-7 pb-14 md:pt-9 md:pb-20">
-        <div className="mb-7 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h2 className="font-sans text-[19px] leading-none font-extrabold tracking-[-0.01em] text-navy uppercase md:text-[24px]">
-            Apoiadores Institucionais
-          </h2>
-        </div>
-        <ul className="grid grid-cols-3 gap-2.5 md:grid-cols-6 md:gap-4">
-          {supporters.slice(0, 6).map((item) => (
-            <li key={item.slug}>
-              <SupporterLogo item={item} />
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Rodapé institucional — mesmo azul da faixa do logo */}
       <div className="pad-x bg-[#001630] py-12 md:py-14">
         <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <Link
@@ -79,7 +66,20 @@ export async function Footer() {
           </nav>
         </div>
 
-        <div className="mt-9 flex flex-col gap-4 border-t border-cream/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-9 border-t border-cream/12 pt-6">
+          <p className="mb-4 font-sans text-[11px] font-extrabold tracking-[0.16em] text-cream/45 uppercase">
+            Apoiadores
+          </p>
+          <ul className="grid grid-cols-3 gap-2.5 sm:grid-cols-6">
+            {supporters.slice(0, 6).map((item) => (
+              <li key={item.slug}>
+                <SupporterLogo item={item} onDark />
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-4 border-t border-cream/12 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <span className="font-mono text-[11px] text-cream/45">
             © {new Date().getFullYear()} {site.name} · Brasília, DF
           </span>

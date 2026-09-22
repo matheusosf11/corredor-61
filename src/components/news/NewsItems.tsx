@@ -21,17 +21,29 @@ export function NewsCard({
   item: News;
   onDark?: boolean;
 }) {
+  const category = catName(item);
+
   return (
     <Link href={`/noticias/${item.slug}`} className="group flex flex-col">
       <div
-        className={`aspect-[3/2] overflow-hidden rounded-lg border ${
-          onDark ? "border-cream/15" : "border-navy/10"
+        className={`relative aspect-[3/2] overflow-hidden rounded-lg border-2 transition-colors duration-200 ${
+          onDark
+            ? "border-cream/15 group-hover:border-gold group-focus-visible:border-gold"
+            : "border-navy/10 group-hover:border-gold group-focus-visible:border-gold"
         }`}
       >
         <CoverMedia
           cover={item.cover}
           className="transition-transform duration-500 group-hover:scale-[1.04]"
         />
+        {category ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-3 left-3 rounded-md bg-gold px-2.5 py-1 font-sans text-[12px] leading-none font-bold text-navy lowercase opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100"
+          >
+            {category}
+          </span>
+        ) : null}
       </div>
       <span
         className={`mt-4 text-[15px] lowercase transition-colors ${

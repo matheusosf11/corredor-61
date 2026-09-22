@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { InstagramPostCard } from "@/components/instagram/InstagramPostCard";
 import { NewsCard } from "@/components/news/NewsItems";
 import { formatDate } from "@/lib/format";
 import { getCategory } from "@/lib/categories";
+import { instagramPosts } from "@/lib/instagramPosts";
 import {
   getAllAuthors,
   getHomeArticles,
@@ -27,8 +29,6 @@ export default async function HomePage() {
       slug: item.slug,
       title: item.title,
       authorName: author?.name ?? "",
-      authorRole: author?.role ?? "",
-      dateLabel: formatDate(item.publishedAt),
       authorPhotoUrl: author?.photoUrl,
     };
   });
@@ -102,6 +102,30 @@ export default async function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="pad-x bg-cream py-12 lg:py-14" aria-labelledby="instagram-posts">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3 border-b-2 border-navy pb-3">
+          <h2
+            id="instagram-posts"
+            className="text-[26px] font-extrabold tracking-[-0.02em] text-navy md:text-[30px]"
+          >
+            Instagram
+          </h2>
+          <Link
+            href="/videos"
+            className="nav-link text-[12px] text-gold-ink hover:text-navy"
+          >
+            Ver todos →
+          </Link>
+        </div>
+        <ul className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+          {instagramPosts.slice(0, 3).map((post) => (
+            <li key={post.href}>
+              <InstagramPostCard post={post} variant="news" />
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   );

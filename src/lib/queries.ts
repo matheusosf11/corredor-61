@@ -2,6 +2,7 @@ import { about, articles, authors, news, supporters } from "./data";
 import { DEMO_IMAGES, demoImageAt } from "./demo-images";
 import { bodyToText, initialsFromName } from "./format";
 import { categories, getCategory } from "./categories";
+import { seedNewsPlaces, type PlaceSlug } from "./places";
 import type {
   AboutContent,
   Article,
@@ -93,7 +94,12 @@ function staticNews(): News[] {
     .filter(isLive)
     .slice()
     .sort(byDateDesc)
-    .map((item, index) => withCover(item, index));
+    .map((item, index) =>
+      withCover(
+        { ...item, place: item.place ?? seedNewsPlaces[item.slug] },
+        index,
+      ),
+    );
 }
 
 function staticArticles(): Article[] {
@@ -131,6 +137,17 @@ export async function getHomeNewsGrid(featuredSlug: string, limit = 6) {
   return (await getPublishedNews())
     .filter((item) => item.slug !== featuredSlug)
     .slice(0, limit);
+}
+
+export async function getNewsByPlace(place: PlaceSlug) {
+  return (await getPublishedNews()).filter((item) => item.place === place);
+}
+
+export async function getNewsByPlaces(places: PlaceSlug[]) {
+  const allowed = new Set(places);
+  return (await getPublishedNews()).filter(
+    (item) => item.place && allowed.has(item.place),
+  );
 }
 
 export async function getNewsPage(page: number, category?: CategorySlug) {

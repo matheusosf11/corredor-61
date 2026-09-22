@@ -1,10 +1,12 @@
 "use client";
 
+import gsap from "gsap";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { onIntroComplete } from "@/components/intro/introState";
 import { cardNavItems } from "@/lib/nav";
 import { site } from "@/lib/site";
 import CardNav from "./CardNav";
@@ -194,6 +196,23 @@ export function Header() {
   const todayLabel = useTodayLabel();
   const scrolled = useScrolled();
 
+  useEffect(
+    () =>
+      onIntroComplete(() => {
+        gsap.fromTo(
+          '[data-intro-reveal="header"]',
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: "power1.out",
+            clearProps: "opacity",
+          },
+        );
+      }),
+    [],
+  );
+
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
@@ -227,6 +246,7 @@ export function Header() {
         }}
       >
         <div
+          data-intro-reveal="header"
           className={`flex items-center justify-between py-3 transition-colors duration-300 ${
             scrolled ? "border-b border-navy/12" : "border-b border-cream/10"
           }`}
@@ -294,7 +314,10 @@ export function Header() {
         }}
       >
         {/* Marca ao centro, entre réguas douradas */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 pt-[34px] pb-[30px]">
+        <div
+          data-intro-reveal="header"
+          className="grid grid-cols-[1fr_auto_1fr] items-center gap-6 pt-[34px] pb-[30px]"
+        >
           <span aria-hidden />
           <Link
             href="/"
@@ -347,7 +370,10 @@ export function Header() {
           Mobile — marca + wordmark no topo, tab bar inferior (azul)
           ============================================================ */}
       <div className="fixed inset-x-0 top-0 z-40 bg-[#0b1730] md:hidden">
-        <div className="flex justify-center px-4 py-2.5">
+        <div
+          data-intro-reveal="header"
+          className="flex justify-center px-4 py-2.5"
+        >
           <MobileBrand />
         </div>
         <div className="h-[2px] bg-[linear-gradient(90deg,#c9a044,rgba(201,160,68,0.35))]" />

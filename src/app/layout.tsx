@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Archivo, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
+import { IntroPreloader } from "@/components/intro/IntroPreloader";
+import {
+  introCriticalCss,
+  introInlineScript,
+} from "@/components/intro/introState";
 import { Footer } from "@/components/layout/Footer";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { site } from "@/lib/site";
@@ -47,9 +52,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="pt-BR"
       className={`${archivo.variable} ${sourceSerif.variable} ${plexMono.variable} h-full`}
+      suppressHydrationWarning
     >
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: introCriticalCss }} />
+        <script dangerouslySetInnerHTML={{ __html: introInlineScript }} />
+      </head>
       <body className="min-h-full">
         <SiteChrome footer={<Footer />}>{children}</SiteChrome>
+        <IntroPreloader />
       </body>
     </html>
   );

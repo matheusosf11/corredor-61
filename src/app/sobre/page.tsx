@@ -18,7 +18,7 @@ function splitObjective(item: string) {
 }
 
 const prose =
-  "font-serif text-[16px] leading-[1.72] text-[#1a1a1a]/80 text-justify hyphens-auto md:text-[17px]";
+  "font-sans text-[17px] leading-[1.75] font-normal text-[#333] md:text-[18px]";
 
 export default async function SobrePage() {
   const about = await getAbout();
@@ -26,59 +26,63 @@ export default async function SobrePage() {
   return (
     <div>
       <div className="pad-x flex flex-col items-center border-b border-navy/12 bg-cream py-12 md:py-[52px]">
-        <div className="flex w-full max-w-[64ch] flex-col gap-4">
+        <div className="flex w-full max-w-[860px] flex-col gap-4">
           <span className="nav-link text-[10px] leading-none text-gold-ink">
             Sobre nós
           </span>
           <h1 className="text-[28px] leading-[1.08] font-extrabold tracking-[-0.03em] text-navy text-pretty sm:text-[34px] md:text-[42px]">
             {about.title}
           </h1>
-          <p className="font-serif text-[18px] leading-[1.7] text-navy text-pretty md:text-[19px]">
+          <p className={prose}>
             {about.proposal}
           </p>
         </div>
       </div>
 
       <div className="pad-x flex flex-col items-center bg-white pt-12 pb-16 md:pt-14 md:pb-[72px]">
-        <div className="flex w-full max-w-[64ch] flex-col gap-7">
-          {about.intro.map((paragraph) => (
-            <p key={paragraph.slice(0, 48)} className={prose}>
-              {paragraph}
-            </p>
-          ))}
+        <div className="flex w-full max-w-[860px] flex-col">
+          <div className="flex flex-col gap-9 md:gap-11">
+            {about.intro.map((paragraph) => (
+              <p key={paragraph.slice(0, 48)} className={prose}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
 
           <section
             aria-labelledby="sobre-objetivos"
-            className="flex flex-col gap-6"
+            className="mt-16 border-t border-navy/15 pt-10 md:mt-20 md:pt-12"
           >
             <h2
               id="sobre-objetivos"
-              className="nav-link mt-3.5 text-[12px] leading-none text-navy"
+              className="nav-link text-[18px] leading-none text-navy md:text-[20px]"
             >
               Objetivos
             </h2>
-            {about.objectives.map((objective) => {
-              const { label, text } = splitObjective(objective);
-              return (
-                <div key={objective} className="flex flex-col gap-1.5">
-                  {label ? (
-                    <h3 className="font-sans text-[15px] leading-none font-extrabold tracking-[-0.01em] text-navy">
-                      {label}
-                    </h3>
-                  ) : null}
-                  <p className={prose}>{text}</p>
-                </div>
-              );
-            })}
+            <div className="mt-2 divide-y divide-navy/12">
+              {about.objectives.map((objective) => {
+                const { label, text } = splitObjective(objective);
+                return (
+                  <div key={objective} className="py-7 md:py-8">
+                    {label ? (
+                      <h3 className="font-sans text-[18px] leading-snug font-bold text-navy md:text-[20px]">
+                        {label}
+                      </h3>
+                    ) : null}
+                    <p className={`${prose} mt-4`}>{text}</p>
+                  </div>
+                );
+              })}
+            </div>
           </section>
 
           <section
             aria-labelledby="sobre-quem-faz"
-            className="mt-3.5 flex flex-col gap-4 border-t border-navy/15 pt-[22px]"
+            className="mt-16 flex flex-col gap-8 border-t border-navy/15 pt-10 md:mt-20 md:gap-9 md:pt-12"
           >
             <h2
               id="sobre-quem-faz"
-              className="nav-link text-[12px] leading-none text-navy"
+              className="nav-link text-[18px] leading-none text-navy md:text-[20px]"
             >
               Quem faz
             </h2>
@@ -113,11 +117,11 @@ export default async function SobrePage() {
 
           <section
             aria-labelledby="sobre-contato"
-            className="mt-3.5 flex flex-col gap-2.5 border-t border-navy/15 pt-[22px]"
+            className="mt-16 flex flex-col gap-4 border-t border-navy/15 pt-10 md:mt-20 md:pt-12"
           >
             <h2
               id="sobre-contato"
-              className="nav-link text-[12px] leading-none text-navy"
+              className="nav-link text-[18px] leading-none text-navy md:text-[20px]"
             >
               Contato
             </h2>

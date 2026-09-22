@@ -16,6 +16,7 @@ export const newsQuery = `*[_type == "news" && defined(slug.current) && ${live}]
   ${cover},
   authorName,
   category,
+  place,
   publishedAt,
   "status": "published",
   featured
@@ -29,6 +30,7 @@ export const newsBySlugQuery = `*[_type == "news" && slug.current == $slug && ${
   ${cover},
   authorName,
   category,
+  place,
   publishedAt,
   "status": "published",
   featured

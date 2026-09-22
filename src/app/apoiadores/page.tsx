@@ -20,7 +20,7 @@ export default async function ApoiadoresPage() {
         description="Empresas, escritórios, instituições e organizações que apoiam o projeto. Esta área não é espaço de anúncio, publicidade ou conteúdo patrocinado."
         meta={`${items.length} ${items.length === 1 ? "apoiador ativo" : "apoiadores ativos"}`}
       />
-      <div className="pad-x bg-navy py-14">
+      <div className="pad-x py-14">
         <SupportersGrid items={items} />
       </div>
     </div>

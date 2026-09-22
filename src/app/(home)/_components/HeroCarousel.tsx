@@ -1,7 +1,9 @@
 "use client";
 
+import gsap from "gsap";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { onIntroComplete } from "@/components/intro/introState";
 import type { Cover } from "@/lib/types";
 import { CoverMedia } from "@/components/ui/CoverMedia";
 import { Eyebrow } from "./Eyebrow";
@@ -42,13 +44,18 @@ function Slide({ item }: { item: HeroSlide }) {
       className="group flex h-full w-full flex-col bg-blackish sm:grid sm:grid-cols-[1.25fr_1fr]"
     >
       <div className="h-[220px] overflow-hidden sm:h-full sm:min-h-[420px]">
-        <CoverMedia
-          cover={item.cover}
-          variant="hero-dark"
-          className="transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
-        />
+        <div data-intro-reveal="media" className="h-full w-full">
+          <CoverMedia
+            cover={item.cover}
+            variant="hero-dark"
+            className="transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04]"
+          />
+        </div>
       </div>
-      <div className="flex flex-col justify-center gap-4 px-6 py-10 sm:px-9">
+      <div
+        data-intro-reveal="headline"
+        className="flex flex-col justify-center gap-4 px-6 py-10 sm:px-9"
+      >
         <span className="flex items-center gap-2.5">
           <span className="h-0.5 w-6 bg-gold" />
           <Eyebrow tone="on-dark" className="tracking-[0.18em]">
@@ -113,6 +120,34 @@ export function HeroCarousel({ items }: { items: HeroSlide[] }) {
   );
 
   useEffect(() => () => window.clearTimeout(releaseTimer.current), []);
+
+  useEffect(
+    () =>
+      onIntroComplete(() => {
+        gsap.fromTo(
+          '[data-intro-reveal="headline"]',
+          { y: 20, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            clearProps: "transform,opacity",
+          },
+        );
+        gsap.fromTo(
+          '[data-intro-reveal="media"]',
+          { scale: 1.02 },
+          {
+            scale: 1,
+            duration: 1.1,
+            ease: "power2.out",
+            clearProps: "transform",
+          },
+        );
+      }),
+    [],
+  );
 
   function handleTransitionEnd(event: React.TransitionEvent<HTMLDivElement>) {
     // Só o trilho — ignora transições que borbulham dos filhos (imagem, título…).

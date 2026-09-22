@@ -1,4 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
+import { placeOptions } from "../../lib/places";
 import { categoryOptions } from "./categoryOptions";
 
 export const newsType = defineType({
@@ -54,6 +55,14 @@ export const newsType = defineType({
       type: "string",
       options: { list: categoryOptions, layout: "radio" },
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "place",
+      title: "Onde aparece",
+      description:
+        "Mundo, Brasil ou uma cidade. É essa escolha que coloca a notícia na aba correspondente do menu.",
+      type: "string",
+      options: { list: [...placeOptions] },
     }),
     defineField({
       name: "publishedAt",

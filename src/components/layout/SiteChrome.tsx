@@ -21,7 +21,7 @@ export function SiteChrome({
       <a className="skip-link" href="#conteudo">
         Ir para o conteúdo
       </a>
-      <div className="flex min-h-full w-full flex-col bg-paper pb-[calc(56px_+_env(safe-area-inset-bottom))] md:pb-0">
+      <div id="site" className="flex min-h-full w-full flex-col bg-paper pb-[calc(56px_+_env(safe-area-inset-bottom))] md:pb-0">
         <Header />
         <main id="conteudo" className="flex-1">
           {children}

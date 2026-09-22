@@ -54,7 +54,7 @@ export function DesktopNav() {
       className="relative z-20"
       onMouseLeave={() => setOpen(null)}
     >
-      <div className="grid grid-cols-4 gap-x-[34px]">
+      <div className="flex flex-wrap gap-x-[34px]">
         {primaryNav.map((item) => {
           const active = navItemIsActive(item, pathname);
           const open = openHref === item.href;

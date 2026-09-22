@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { cities } from "@/lib/places";
 import {
   getActiveAuthors,
   getPublishedArticles,
@@ -11,6 +12,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/noticias",
+    "/mundo",
+    "/brasil",
+    "/cidades",
+    "/bastidores",
     "/artigos",
     "/videos",
     "/autores",
@@ -30,6 +35,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticRoutes,
+    ...cities.map((city) => ({
+      url: `${base}/cidades/${city.slug}`,
+      lastModified: new Date(),
+    })),
     ...news.map((item) => ({
       url: `${base}/noticias/${item.slug}`,
       lastModified: new Date(item.publishedAt),

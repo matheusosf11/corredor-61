@@ -74,7 +74,7 @@ const CardNav = ({
         return topBar + contentHeight + padding;
       }
     }
-    return 240;
+    return 280;
   };
 
   const createTimeline = () => {
@@ -222,7 +222,7 @@ const CardNav = ({
         </div>
 
         <div className="card-nav-content" aria-hidden={!isExpanded}>
-          {(items || []).slice(0, 3).map((item, idx) => (
+          {(items || []).map((item, idx) => (
             <div
               key={`${item.label}-${idx}`}
               className="nav-card"

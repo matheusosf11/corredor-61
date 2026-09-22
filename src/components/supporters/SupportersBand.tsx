@@ -1,42 +1,48 @@
 import type { Supporter } from "@/lib/types";
 
-function PlaceholderMark({ label }: { label: string }) {
+function PlaceholderMark({
+  label,
+  onDark = false,
+}: {
+  label: string;
+  onDark?: boolean;
+}) {
   return (
-    <>
-      <svg
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        className="h-6 w-6 text-navy/30"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect x="3" y="4" width="18" height="16" rx="2" />
-        <circle cx="8.5" cy="9.5" r="1.5" />
-        <path d="m4 16 5-5 4 4 3-3 4 4" />
-      </svg>
-      <span className="font-mono text-[9px] tracking-[0.08em] text-navy/40 uppercase">
-        {label}
-      </span>
-    </>
+    <span
+      className={`font-sans text-[13px] font-extrabold tracking-[0.14em] uppercase ${
+        onDark ? "text-cream/80" : "text-navy/45"
+      }`}
+    >
+      {label}
+    </span>
   );
 }
 
-/** Espaço da logo do apoiador (faixa do rodapé e da home). */
-export function SupporterLogo({ item }: { item: Supporter }) {
+/** Marca do apoiador. No rodapé, versão baixa sobre o azul. */
+export function SupporterLogo({
+  item,
+  onDark = false,
+}: {
+  item: Supporter;
+  onDark?: boolean;
+}) {
   const inner = (
-    <span className="motif flex h-[120px] flex-col items-center justify-center gap-1.5 border border-navy/12 px-2 text-center">
+    <span
+      className={
+        onDark
+          ? "flex h-14 items-center justify-center border border-cream/15 px-3 text-center"
+          : "motif flex h-[120px] flex-col items-center justify-center gap-1.5 border border-navy/12 px-2 text-center"
+      }
+    >
       {item.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.logoUrl}
           alt={item.name}
-          className="max-h-16 max-w-[85%] object-contain"
+          className={`max-w-[85%] object-contain ${onDark ? "max-h-8" : "max-h-16"}`}
         />
       ) : (
-        <PlaceholderMark label={item.shortName} />
+        <PlaceholderMark label={item.shortName} onDark={onDark} />
       )}
       <span className="sr-only">{item.name}</span>
     </span>

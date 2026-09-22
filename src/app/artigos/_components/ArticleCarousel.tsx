@@ -185,7 +185,7 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
             type="button"
             onClick={() => move(-1)}
             aria-label="Artigos anteriores"
-            className="relative inline-flex h-8 items-center justify-center border border-cream/30 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-cream/80 uppercase transition-colors hover:border-gold hover:text-gold"
+            className="relative inline-flex h-8 items-center justify-center border border-navy/25 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-navy/70 uppercase transition-colors hover:border-gold-ink hover:text-gold-ink"
           >
             ← Anterior
           </button>
@@ -193,7 +193,7 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
             type="button"
             onClick={() => move(1)}
             aria-label="Ver mais artigos"
-            className="relative -ml-px inline-flex h-8 items-center justify-center border border-cream/30 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-cream/80 uppercase transition-colors hover:border-gold hover:text-gold"
+            className="relative -ml-px inline-flex h-8 items-center justify-center border border-navy/25 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-navy/70 uppercase transition-colors hover:border-gold-ink hover:text-gold-ink"
           >
             Ver mais →
           </button>

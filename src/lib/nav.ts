@@ -1,3 +1,5 @@
+import { cities } from "./places";
+
 export type NavChild = {
   href: string;
   label: string;
@@ -16,6 +18,11 @@ export type NavItem = {
   groups?: NavGroup[];
 };
 
+const cityLinks: NavChild[] = cities.map((city) => ({
+  href: `/cidades/${city.slug}`,
+  label: city.name,
+}));
+
 export const primaryNav: NavItem[] = [
   {
     href: "/noticias",
@@ -31,15 +38,30 @@ export const primaryNav: NavItem[] = [
           { href: "/noticias?categoria=institucional", label: "Institucional" },
         ],
       },
+    ],
+  },
+  {
+    href: "/mundo",
+    label: "Mundo",
+  },
+  {
+    href: "/brasil",
+    label: "Brasil",
+  },
+  {
+    href: "/cidades",
+    label: "Cidades",
+    match: ["/cidades"],
+    groups: [
       {
-        heading: "Por região",
-        items: [
-          { href: "/noticias", label: "Brasília" },
-          { href: "/noticias", label: "São Paulo" },
-          { href: "/noticias", label: "Mundo" },
-        ],
+        heading: "Cidades",
+        items: [{ href: "/cidades", label: "Todas" }, ...cityLinks],
       },
     ],
+  },
+  {
+    href: "/bastidores",
+    label: "Bastidores",
   },
   {
     href: "/artigos",
@@ -95,7 +117,7 @@ export function navItemIsActive(item: NavItem, pathname: string) {
   );
 }
 
-/** CardNav só renderiza 3 cartões — o 4º item (Vídeos) entra em Artigos. */
+/** O card de Cidades lista as cidades de `places.ts`. */
 export const cardNavItems = [
   {
     label: "Notícias",
@@ -122,6 +144,47 @@ export const cardNavItems = [
         label: "Institucional",
         href: "/noticias?categoria=institucional",
         ariaLabel: "Notícias institucionais",
+      },
+    ],
+  },
+  {
+    label: "Mundo",
+    bgColor: "#0b1730",
+    textColor: "#f4f0e4",
+    links: [
+      { label: "Notícias", href: "/mundo", ariaLabel: "Notícias do mundo" },
+    ],
+  },
+  {
+    label: "Brasil",
+    bgColor: "#101f3c",
+    textColor: "#f4f0e4",
+    links: [
+      { label: "Notícias", href: "/brasil", ariaLabel: "Notícias do Brasil" },
+    ],
+  },
+  {
+    label: "Cidades",
+    bgColor: "#142848",
+    textColor: "#f4f0e4",
+    links: [
+      { label: "Todas", href: "/cidades", ariaLabel: "Notícias das cidades" },
+      ...cities.map((city) => ({
+        label: city.name,
+        href: `/cidades/${city.slug}`,
+        ariaLabel: `Notícias de ${city.name}`,
+      })),
+    ],
+  },
+  {
+    label: "Bastidores",
+    bgColor: "#0b1730",
+    textColor: "#f4f0e4",
+    links: [
+      {
+        label: "Notícias",
+        href: "/bastidores",
+        ariaLabel: "Notícias de bastidores",
       },
     ],
   },

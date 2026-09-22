@@ -1,3 +1,5 @@
+import type { PlaceSlug } from "./places";
+
 export type CategorySlug =
   | "legislativo"
   | "judiciario"
@@ -44,6 +46,8 @@ export type News = {
   cover: Cover;
   authorName: string;
   category: CategorySlug;
+  /** Mundo, Brasil ou uma cidade. Sem valor, a notícia fica só na listagem geral. */
+  place?: PlaceSlug;
   publishedAt: string;
   status: ContentStatus;
   featured?: boolean;

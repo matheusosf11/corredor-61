@@ -89,8 +89,7 @@ export default async function ArtigosPage() {
         </div>
       </div>
 
-      {/* Mosaico em carrossel — faixa marinho (seção seguinte) */}
-      <div className="pad-x bg-navy pt-11 pb-8">
+      <div className="pad-x pt-11 pb-8">
         <ArticleCarousel articles={items} />
       </div>
     </div>
