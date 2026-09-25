@@ -38,12 +38,16 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description: site.description,
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
   openGraph: {
     title: site.name,
     description: site.description,
     locale: "pt_BR",
     type: "website",
-    images: [{ url: "/logo.png", alt: site.name }],
+    images: [{ url: "/marca-corredor61.png", alt: site.name }],
   },
 };
 
