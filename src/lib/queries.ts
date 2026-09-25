@@ -1,12 +1,14 @@
 import { about, articles, authors, news, supporters } from "./data";
 import { DEMO_IMAGES, demoImageAt } from "./demo-images";
 import { bodyToText, initialsFromName } from "./format";
-import { categories, getCategory } from "./categories";
+import { categories, categoryLabel, getCategory } from "./categories";
+import { instagramPosts, type InstagramPost } from "./instagramPosts";
 import { seedNewsPlaces, type PlaceSlug } from "./places";
 import type {
   AboutContent,
   Article,
   Author,
+  Category,
   CategorySlug,
   News,
   SearchHit,
@@ -18,15 +20,21 @@ import {
   articleBySlugQuery,
   articlesQuery,
   authorsQuery,
+  categoriesQuery,
   newsBySlugQuery,
   newsQuery,
   searchQuery,
   supportersQuery,
+  videosQuery,
 } from "@/sanity/queries";
 
 export { getCategory, categories as getCategoriesList };
 
-export function getCategories() {
+export async function getCategories(): Promise<Category[]> {
+  const rows = await cmsFetch<Category[]>(categoriesQuery);
+  if (rows?.length) {
+    return rows.filter((row) => row.slug && row.name);
+  }
   return categories;
 }
 
@@ -60,6 +68,7 @@ async function cmsFetch<T>(
 function withCover(item: News, index: number): News {
   return {
     ...item,
+    categoryName: categoryLabel(item.category, item.categoryName),
     cover: { ...item.cover, image: item.cover.image ?? demoImageAt(index) },
   };
 }
@@ -68,6 +77,9 @@ function withArticleCover(item: Article, index: number): Article {
   const offset = Math.floor(DEMO_IMAGES.length / 2);
   return {
     ...item,
+    categoryName: item.category
+      ? categoryLabel(item.category, item.categoryName, "Opinião")
+      : "Opinião",
     cover: {
       ...item.cover,
       image: item.cover.image ?? demoImageAt(index + offset),
@@ -218,14 +230,22 @@ export async function getActiveSupporters(): Promise<Supporter[]> {
     .sort((a, b) => a.order - b.order);
 }
 
+export async function getInstagramPosts(): Promise<InstagramPost[]> {
+  const rows = await cmsFetch<InstagramPost[]>(videosQuery);
+  if (rows?.length) {
+    return rows.filter((row) => row.href && row.cover);
+  }
+  return instagramPosts;
+}
+
 export async function getAbout(): Promise<AboutContent> {
   const row = await cmsFetch<AboutContent | null>(aboutQuery);
   if (!row?.proposal) return about;
   return {
     ...about,
     ...row,
-    intro: row.intro?.length ? row.intro : [],
-    whoMakes: row.whoMakes?.length ? row.whoMakes : [],
+    intro: row.intro?.length ? row.intro : about.intro,
+    whoMakes: row.whoMakes?.length ? row.whoMakes : about.whoMakes,
     people: row.people ?? [],
   };
 }

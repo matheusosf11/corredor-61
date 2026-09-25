@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RevealHeading } from "@/components/motion/RevealHeading";
 import { site } from "@/lib/site";
 import { getAbout } from "@/lib/queries";
 
@@ -27,12 +28,9 @@ export default async function SobrePage() {
     <div>
       <div className="pad-x flex flex-col items-center border-b border-navy/12 bg-cream py-12 md:py-[52px]">
         <div className="flex w-full max-w-[860px] flex-col gap-4">
-          <span className="nav-link text-[10px] leading-none text-gold-ink">
-            Sobre nós
-          </span>
-          <h1 className="text-[28px] leading-[1.08] font-extrabold tracking-[-0.03em] text-navy text-pretty sm:text-[34px] md:text-[42px]">
+          <RevealHeading className="text-[28px] leading-[1.08] font-extrabold tracking-[-0.03em] text-navy text-pretty sm:text-[34px] md:text-[42px]">
             {about.title}
-          </h1>
+          </RevealHeading>
           <p className={prose}>
             {about.proposal}
           </p>

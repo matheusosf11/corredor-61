@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { NewsCard } from "@/components/news/NewsItems";
 import { PageHead } from "@/components/ui/PageHead";
+import { PageTab } from "@/components/ui/PageTabs";
 import { getCategories, getNewsPage } from "@/lib/queries";
-import type { CategorySlug } from "@/lib/types";
 import { Pagination } from "./_components/Pagination";
 
 export const metadata: Metadata = {
@@ -18,9 +17,9 @@ type Props = {
 
 export default async function NoticiasPage({ searchParams }: Props) {
   const params = await searchParams;
-  const categories = getCategories();
+  const categories = await getCategories();
   const categoria = categories.some((item) => item.slug === params.categoria)
-    ? (params.categoria as CategorySlug)
+    ? params.categoria
     : undefined;
   const page = Number(params.page) || 1;
   const result = await getNewsPage(page, categoria);
@@ -39,9 +38,9 @@ export default async function NoticiasPage({ searchParams }: Props) {
         title="Notícias"
         nav={
           <>
-            <FilterChip href="/noticias" active={!categoria} label="Todas" />
+            <PageTab href="/noticias" active={!categoria} label="Todas" />
             {categories.map((item) => (
-              <FilterChip
+              <PageTab
                 key={item.slug}
                 href={`/noticias?categoria=${item.slug}`}
                 active={categoria === item.slug}
@@ -72,27 +71,5 @@ export default async function NoticiasPage({ searchParams }: Props) {
         />
       </div>
     </div>
-  );
-}
-
-function FilterChip({
-  href,
-  active,
-  label,
-}: {
-  href: string;
-  active: boolean;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={`nav-link text-[13px] whitespace-nowrap transition-colors md:text-[14px] ${
-        active ? "text-gold" : "text-navy hover:text-gold"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }

@@ -1,5 +1,6 @@
-import Link from "next/link";
+import { RevealHeading } from "@/components/motion/RevealHeading";
 import { NewsCard } from "@/components/news/NewsItems";
+import { PageTab, PageTabs } from "@/components/ui/PageTabs";
 import { cities, cityHref } from "@/lib/places";
 import type { News } from "@/lib/types";
 
@@ -12,39 +13,53 @@ export function PlaceNewsList({
   items: News[];
   activeHref: string;
 }) {
+  const inCities =
+    activeHref === "/cidades" || activeHref.startsWith("/cidades/");
+  // Só abre com animação ao entrar em Cidades, não ao trocar de cidade.
+  const expandCities = activeHref === "/cidades";
+
   return (
     <div>
-      <div className="pad-x border-b border-navy/12 bg-cream py-3 md:py-3.5">
-        <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:justify-between">
-          <h1 className="font-sans text-[28px] leading-none font-extrabold tracking-[0.08em] text-navy uppercase md:text-[36px]">
-            {title}
-          </h1>
-          <nav
-            className="flex flex-wrap items-center gap-x-5 gap-y-2 md:justify-end"
-            aria-label="Editorias"
-          >
-            <PlaceChip href="/mundo" active={activeHref === "/mundo"} label="Mundo" />
-            <PlaceChip href="/brasil" active={activeHref === "/brasil"} label="Brasil" />
-            <PlaceChip
-              href="/bastidores"
-              active={activeHref === "/bastidores"}
-              label="Bastidores"
-            />
-            <PlaceChip
-              href="/cidades"
-              active={activeHref === "/cidades"}
-              label="Cidades"
-            />
-            {cities.map((city) => (
-              <PlaceChip
-                key={city.slug}
-                href={cityHref(city.slug)}
-                active={activeHref === cityHref(city.slug)}
-                label={city.name}
-              />
-            ))}
-          </nav>
-        </div>
+      <div className="pad-x border-b border-navy/12 bg-cream pt-9 md:pt-11">
+        <RevealHeading
+          className="text-[30px] leading-none font-extrabold tracking-[-0.025em] text-navy md:text-[34px]"
+          prefix={
+            <span aria-hidden className="mr-[0.35em] font-extrabold text-gold">
+              /
+            </span>
+          }
+        >
+          {title}
+        </RevealHeading>
+        <PageTabs label="Editorias">
+          <PageTab fluid href="/mundo" active={activeHref === "/mundo"} label="Mundo" />
+          <PageTab fluid href="/brasil" active={activeHref === "/brasil"} label="Brasil" />
+          <PageTab
+            fluid
+            href="/bastidores"
+            active={activeHref === "/bastidores"}
+            label="Bastidores"
+          />
+          <PageTab
+            fluid
+            href="/cidades"
+            active={activeHref === "/cidades"}
+            label="Cidades"
+          />
+          {inCities
+            ? cities.map((city, i) => (
+                <PageTab
+                  key={city.slug}
+                  fluid
+                  expand={expandCities}
+                  style={expandCities ? { animationDelay: `${i * 40}ms` } : undefined}
+                  href={cityHref(city.slug)}
+                  active={activeHref === cityHref(city.slug)}
+                  label={city.name}
+                />
+              ))
+            : null}
+        </PageTabs>
       </div>
       <div className="pad-x pt-10 pb-14">
         {items.length === 0 ? (
@@ -60,27 +75,5 @@ export function PlaceNewsList({
         )}
       </div>
     </div>
-  );
-}
-
-function PlaceChip({
-  href,
-  active,
-  label,
-}: {
-  href: string;
-  active: boolean;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "page" : undefined}
-      className={`nav-link text-[13px] whitespace-nowrap transition-colors md:text-[14px] ${
-        active ? "text-gold" : "text-navy hover:text-gold"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
-import { navItemIsActive, primaryNav, type NavItem } from "@/lib/nav";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { navItemIsActive, primaryNav as defaultNav, type NavItem } from "@/lib/nav";
 
 function Chevron({ open }: { open: boolean }) {
   return (
@@ -20,11 +20,12 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-export function DesktopNav() {
+export function DesktopNav({ items = defaultNav }: { items?: NavItem[] }) {
   const pathname = usePathname();
   const [openHref, setOpen] = useState<string | null>(null);
   const wrapRef = useRef<HTMLElement>(null);
   const menuId = useId();
+  const primaryNav = items;
   const openItem = primaryNav.find((item) => item.href === openHref) ?? null;
 
   useEffect(() => {
@@ -152,15 +153,20 @@ export function DesktopNav() {
 function MobileSection({
   item,
   onNavigate,
+  staggerIndex,
 }: {
   item: NavItem;
   onNavigate: () => void;
+  staggerIndex: number;
 }) {
   const [open, setOpen] = useState(false);
   const hasMenu = Boolean(item.groups?.length);
 
   return (
-    <div className="border-b border-cream/15">
+    <div
+      className="t-stagger-line border-b border-cream/15"
+      style={{ "--stagger-i": staggerIndex } as CSSProperties}
+    >
       <div className="flex items-stretch">
         <Link
           href={item.href}
@@ -219,11 +225,24 @@ function MobileSection({
   );
 }
 
-export function MobileNav({ onNavigate }: { onNavigate: () => void }) {
+export function MobileNav({
+  onNavigate,
+  items = defaultNav,
+  staggerFrom = 0,
+}: {
+  onNavigate: () => void;
+  items?: NavItem[];
+  staggerFrom?: number;
+}) {
   return (
     <div className="flex flex-col">
-      {primaryNav.map((item) => (
-        <MobileSection key={item.href} item={item} onNavigate={onNavigate} />
+      {items.map((item, index) => (
+        <MobileSection
+          key={item.href}
+          item={item}
+          onNavigate={onNavigate}
+          staggerIndex={staggerFrom + index}
+        />
       ))}
     </div>
   );

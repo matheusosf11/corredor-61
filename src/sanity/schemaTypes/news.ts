@@ -1,22 +1,30 @@
-import { defineArrayMember, defineField, defineType } from "sanity";
-import { placeOptions } from "../../lib/places";
-import { categoryOptions } from "./categoryOptions";
+import { defineField, defineType } from "sanity";
+import { placeName, placeOptions } from "../../lib/places";
+import { portableBody } from "./portableBody";
 
 export const newsType = defineType({
   name: "news",
   title: "Notícia",
   type: "document",
+  groups: [
+    { name: "conteudo", title: "Conteúdo", default: true },
+    { name: "publicacao", title: "Onde aparece" },
+    { name: "midia", title: "Capa" },
+  ],
   fields: [
     defineField({
       name: "title",
       title: "Título",
       type: "string",
+      group: "conteudo",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "slug",
-      title: "Slug",
+      title: "Endereço",
+      description: "Gera o link /noticias/...",
       type: "slug",
+      group: "conteudo",
       options: { source: "title", maxLength: 96 },
       validation: (rule) => rule.required(),
     }),
@@ -24,13 +32,69 @@ export const newsType = defineType({
       name: "dek",
       title: "Linha fina / chamada",
       type: "text",
+      group: "conteudo",
       rows: 3,
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "body",
+      title: "Corpo",
+      group: "conteudo",
+      validation: (rule) => rule.required().min(1),
+      ...portableBody,
+    }),
+    defineField({
+      name: "category",
+      title: "Categoria",
+      description:
+        "Escolha uma categoria cadastrada. Crie nomes novos em Conteúdo → Categorias.",
+      type: "reference",
+      group: "publicacao",
+      to: [{ type: "category" }],
+      options: { disableNew: false },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "place",
+      title: "Página / editoria",
+      description:
+        "Define a página da matéria: /mundo, /brasil, /bastidores ou a cidade em /cidades. A listagem Cidades junta Brasília, São Paulo e Rio.",
+      type: "string",
+      group: "publicacao",
+      options: { list: [...placeOptions], layout: "radio" },
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "authorName",
+      title: "Autor interno",
+      type: "string",
+      group: "publicacao",
+      initialValue: "Equipe Corredor 61",
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "publishedAt",
+      title: "Data de publicação",
+      description: "Data no futuro agenda a matéria. Rascunho fica no botão Rascunho.",
+      type: "datetime",
+      group: "publicacao",
+      initialValue: () => new Date().toISOString(),
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "featured",
+      title: "Destaque na home",
+      description: "Coloca a notícia no carrossel principal da página inicial.",
+      type: "boolean",
+      group: "publicacao",
+      initialValue: false,
+    }),
+    defineField({
       name: "cover",
       title: "Imagem de capa",
+      description: "Usada nos cards, no hero da matéria e no preview do WhatsApp.",
       type: "image",
+      group: "midia",
       options: { hotspot: true },
       validation: (rule) => rule.required(),
       fields: [
@@ -42,80 +106,17 @@ export const newsType = defineType({
         }),
       ],
     }),
-    defineField({
-      name: "authorName",
-      title: "Autor interno",
-      type: "string",
-      initialValue: "Equipe Corredor 61",
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "category",
-      title: "Categoria",
-      type: "string",
-      options: { list: categoryOptions, layout: "radio" },
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "place",
-      title: "Onde aparece",
-      description:
-        "Mundo, Brasil ou uma cidade. É essa escolha que coloca a notícia na aba correspondente do menu.",
-      type: "string",
-      options: { list: [...placeOptions] },
-    }),
-    defineField({
-      name: "publishedAt",
-      title: "Data de publicação",
-      type: "datetime",
-      initialValue: () => new Date().toISOString(),
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "featured",
-      title: "Destaque na home",
-      type: "boolean",
-      initialValue: false,
-    }),
-    defineField({
-      name: "body",
-      title: "Corpo",
-      type: "array",
-      validation: (rule) => rule.required().min(1),
-      of: [
-        defineArrayMember({
-          type: "block",
-          styles: [
-            { title: "Normal", value: "normal" },
-            { title: "Subtítulo", value: "h2" },
-            { title: "Citação", value: "blockquote" },
-          ],
-          marks: {
-            decorators: [
-              { title: "Negrito", value: "strong" },
-              { title: "Itálico", value: "em" },
-            ],
-          },
-        }),
-        defineArrayMember({
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Texto alternativo",
-              type: "string",
-            }),
-          ],
-        }),
-      ],
-    }),
   ],
   preview: {
     select: {
       title: "title",
-      subtitle: "category",
+      category: "category.name",
+      place: "place",
       media: "cover",
+    },
+    prepare({ title, category, place, media }) {
+      const bits = [category, placeName(place)].filter(Boolean);
+      return { title, subtitle: bits.join(" · "), media };
     },
   },
 });

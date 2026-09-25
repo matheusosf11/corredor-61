@@ -26,6 +26,20 @@ const portableComponents: PortableTextComponents = {
   marks: {
     strong: ({ children }) => <strong>{children}</strong>,
     em: ({ children }) => <em>{children}</em>,
+    link: ({ children, value }) => {
+      const href = typeof value?.href === "string" ? value.href : "";
+      if (!href) return <>{children}</>;
+      const external = href.startsWith("http");
+      return (
+        <a
+          href={href}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noopener noreferrer" : undefined}
+        >
+          {children}
+        </a>
+      );
+    },
   },
   types: {
     image: ({ value }) => {

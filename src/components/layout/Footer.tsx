@@ -14,7 +14,6 @@ const footerNav = [
   { href: "/videos", label: "Vídeos" },
   { href: "/autores", label: "Autores" },
   { href: "/sobre", label: "Sobre Nós" },
-  { href: "/apoiadores", label: "Apoiadores" },
 ];
 
 function InstagramIcon() {

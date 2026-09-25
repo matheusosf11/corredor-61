@@ -13,8 +13,8 @@ export function CategoryLabel({
   className?: string;
 }) {
   if (!slug) return null;
-  const category = getCategory(slug);
-  if (!category) return null;
+  const category = getCategory(slug) ?? { name: slug, slug };
+  if (!category.name) return null;
 
   return (
     <span
@@ -38,7 +38,7 @@ export function CategoryChip({
 }) {
   return (
     <span
-      className={`eyebrow inline-block bg-gold px-2.5 py-1.5 text-[10px] text-blackish ${className}`}
+      className={`inline-block bg-gold px-2.5 py-1.5 font-sans text-[11px] leading-none font-extrabold tracking-[0.12em] text-blackish uppercase ${className}`}
     >
       {label}
     </span>

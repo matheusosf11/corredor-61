@@ -7,9 +7,15 @@ import { CategoryChip } from "@/components/ui/CategoryLabel";
 import { CoverMedia } from "@/components/ui/CoverMedia";
 import { ReadingProgress } from "@/components/content/ReadingProgress";
 import { ShareRow } from "@/components/content/ShareRow";
-import { formatDate, readingMinutes } from "@/lib/format";
-import { getCategory } from "@/lib/categories";
-import { getArticleBySlug, getAllAuthors, getAuthor, getPublishedArticles } from "@/lib/queries";
+import { categoryLabel } from "@/lib/categories";
+import {
+  getArticleBySlug,
+  getAllAuthors,
+  getAuthor,
+  getPublishedArticles,
+} from "@/lib/queries";
+import { RevealHeading } from "@/components/motion/RevealHeading";
+import { shareMetadata } from "@/lib/share";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -26,12 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: item.title,
     description: item.dek,
-    openGraph: {
-      title: item.title,
-      description: item.dek,
-      type: "article",
-      publishedTime: item.publishedAt,
-    },
+    ...shareMetadata(item.title, item.dek, item.cover, item.publishedAt),
   };
 }
 
@@ -42,7 +43,9 @@ export default async function ArtigoPage({ params }: Props) {
   const author = await getAuthor(item);
   const authors = await getAllAuthors();
   const authorsBySlug = new Map(authors.map((row) => [row.slug, row]));
-  const cat = item.category ? getCategory(item.category)?.name : "Opinião";
+  const cat = item.category
+    ? categoryLabel(item.category, item.categoryName, "Opinião")
+    : "Opinião";
   const others = (await getPublishedArticles())
     .filter((a) => a.slug !== item.slug)
     .slice(0, 2);
@@ -54,16 +57,12 @@ export default async function ArtigoPage({ params }: Props) {
       {/* Hero */}
       <header className="pad-x grid gap-8 bg-blackish pt-16 pb-14 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-16 lg:pb-16 lg:items-end">
         <div>
-          <div className="mb-5 flex flex-wrap items-center gap-3">
+          <div className="mb-5">
             <CategoryChip label={`Artigo · ${cat}`} />
-            <span className="font-mono text-[11.5px] text-cream/60">
-              {formatDate(item.publishedAt)} · leitura de{" "}
-              {readingMinutes(item.body)} min
-            </span>
           </div>
-          <h1 className="max-w-[24ch] text-[32px] leading-[1.03] font-extrabold tracking-[-0.035em] text-[#f7f4ea] text-pretty md:text-[52px]">
+          <RevealHeading className="max-w-[24ch] text-[32px] leading-[1.03] font-extrabold tracking-[-0.035em] text-[#f7f4ea] text-pretty md:text-[52px]">
             {item.title}
-          </h1>
+          </RevealHeading>
           <p className="mt-5 max-w-[56ch] font-serif text-[17px] leading-snug text-[#f7f4ea]/78 text-pretty md:text-[21px]">
             {item.dek}
           </p>
@@ -89,7 +88,7 @@ export default async function ArtigoPage({ params }: Props) {
           </div>
           <Link
             href={`/autores/${author.slug}`}
-            className="eyebrow text-[10.5px] tracking-[0.14em] text-gold"
+            className="font-sans text-[10.5px] leading-none font-bold tracking-[0.12em] text-gold uppercase lg:text-[11.5px] lg:tracking-[0.14em]"
           >
             Ver perfil →
           </Link>
@@ -98,18 +97,18 @@ export default async function ArtigoPage({ params }: Props) {
 
       {/* Corpo */}
       <div className="pad-x bg-[#fdfcf8] pt-4 pb-20">
-        <div className="mb-10 flex flex-col gap-4 border-b border-navy/15 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto mb-10 flex max-w-[860px] flex-col gap-4 border-b border-navy/15 py-5 sm:flex-row sm:items-center sm:justify-between">
           <span className="font-mono text-[11.5px] text-navy/55">
             Opinião do autor · não reflete posição editorial do portal
           </span>
           <ShareRow title={item.title} />
         </div>
 
-        <div className="mx-auto max-w-[63ch]">
+        <div className="mx-auto max-w-[860px]">
           <ArticleBody blocks={item.body} />
         </div>
 
-        <div className="mx-auto mt-13 grid max-w-[63ch] gap-5 bg-cream p-7 sm:grid-cols-[84px_1fr]">
+        <div className="mx-auto mt-13 grid max-w-[860px] gap-5 bg-cream p-7 sm:grid-cols-[84px_1fr]">
           <AuthorMark
             initials={author.initials}
             photoUrl={author.photoUrl}
@@ -137,8 +136,8 @@ export default async function ArtigoPage({ params }: Props) {
         </div>
 
         {others.length > 0 ? (
-          <div className="mx-auto mt-13 max-w-[63ch] border-t-2 border-navy pt-5">
-            <h2 className="eyebrow mb-4 text-[12px] tracking-[0.2em] text-navy">
+          <div className="mx-auto mt-13 max-w-[860px] border-t-2 border-navy pt-5">
+            <h2 className="mb-4 font-sans text-[10.5px] leading-none font-bold tracking-[0.12em] text-navy uppercase lg:text-[11.5px] lg:tracking-[0.14em]">
               Outros artigos
             </h2>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -153,8 +152,10 @@ export default async function ArtigoPage({ params }: Props) {
                     <div className="h-[110px]">
                       <CoverMedia cover={a.cover} />
                     </div>
-                    <span className="eyebrow text-[9.5px] tracking-[0.14em] text-gold-ink">
-                      {a.category ? getCategory(a.category)?.name : "Opinião"}
+                    <span className="font-sans text-[10.5px] leading-none font-bold tracking-[0.12em] text-gold-ink uppercase lg:text-[11.5px] lg:tracking-[0.14em]">
+                      {a.category
+                        ? categoryLabel(a.category, a.categoryName, "Opinião")
+                        : "Opinião"}
                     </span>
                     <h3 className="text-[17px] leading-snug font-semibold text-navy group-hover:underline decoration-gold underline-offset-4 text-pretty">
                       {a.title}

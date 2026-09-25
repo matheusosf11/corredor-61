@@ -5,6 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import type { Cover } from "@/lib/types";
 import { AuthorMark } from "@/components/ui/AuthorMark";
 import { CoverMedia } from "@/components/ui/CoverMedia";
+import {
+  Pagination,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { getVisiblePages } from "@/lib/pagination";
 
 export type CarouselArticle = {
   slug: string;
@@ -133,6 +141,15 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
     setIndex((i) => i + delta);
   }
 
+  function goTo(pageIdx: number) {
+    if (!hasLoop || busy.current || pageIdx + 1 === index) return;
+    busy.current = true;
+    setAnimating(true);
+    setIndex(pageIdx + 1);
+  }
+
+  const realIndex = hasLoop ? (index - 1 + pageCount) % pageCount : 0;
+
   function handleTransitionEnd(event: React.TransitionEvent<HTMLDivElement>) {
     if (event.propertyName !== "transform") return;
     busy.current = false;
@@ -177,27 +194,37 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
       </div>
 
       {hasLoop ? (
-        <nav
-          aria-label="Mais artigos"
-          className="mt-10 flex items-center justify-end"
-        >
-          <button
-            type="button"
+        <Pagination aria-label="Mais artigos" className="mt-10 justify-end">
+          <PaginationPrevious
             onClick={() => move(-1)}
             aria-label="Artigos anteriores"
-            className="relative inline-flex h-8 items-center justify-center border border-navy/25 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-navy/70 uppercase transition-colors hover:border-gold-ink hover:text-gold-ink"
+            className="px-2 sm:px-3"
           >
-            ← Anterior
-          </button>
-          <button
-            type="button"
+            <span className="hidden sm:inline">Anterior</span>
+          </PaginationPrevious>
+          {getVisiblePages(realIndex + 1, pageCount).map((n, i) =>
+            n === "..." ? (
+              <PaginationEllipsis key={`ellipsis-${i}`} />
+            ) : (
+              <PaginationItem
+                key={n}
+                type="button"
+                isActive={n === realIndex + 1}
+                onClick={() => goTo(n - 1)}
+                aria-label={`Página ${n} de ${pageCount}`}
+              >
+                {n}
+              </PaginationItem>
+            ),
+          )}
+          <PaginationNext
             onClick={() => move(1)}
             aria-label="Ver mais artigos"
-            className="relative -ml-px inline-flex h-8 items-center justify-center border border-navy/25 px-3 font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] text-navy/70 uppercase transition-colors hover:border-gold-ink hover:text-gold-ink"
+            className="px-2 sm:px-3"
           >
-            Ver mais →
-          </button>
-        </nav>
+            <span className="hidden sm:inline">Ver mais</span>
+          </PaginationNext>
+        </Pagination>
       ) : null}
     </div>
   );

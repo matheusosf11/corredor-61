@@ -12,5 +12,17 @@ export default defineConfig({
   dataset,
   basePath: "/studio",
   plugins: [structureTool({ structure }), visionTool({ defaultApiVersion: apiVersion })],
-  schema: { types: schemaTypes },
+  schema: {
+    types: schemaTypes,
+    templates: (prev) => [
+      ...prev,
+      {
+        id: "news-by-place",
+        title: "Notícia nesta editoria",
+        schemaType: "news",
+        parameters: [{ name: "place", type: "string" }],
+        value: (params: { place?: string }) => ({ place: params.place }),
+      },
+    ],
+  },
 });

@@ -1,11 +1,13 @@
 "use client";
 
 import gsap from "gsap";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { onIntroComplete } from "@/components/intro/introState";
 import type { Cover } from "@/lib/types";
 import { CoverMedia } from "@/components/ui/CoverMedia";
+import { Pagination, PaginationItem } from "@/components/ui/pagination";
 import { Eyebrow } from "./Eyebrow";
 
 export type HeroSlide = {
@@ -19,23 +21,6 @@ export type HeroSlide = {
 };
 
 const AUTOPLAY_MS = 6000;
-
-function Arrow({ flip = false }: { flip?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={`h-4 w-4 ${flip ? "rotate-180" : ""}`}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14M13 6l6 6-6 6" />
-    </svg>
-  );
-}
 
 function Slide({ item }: { item: HeroSlide }) {
   return (
@@ -237,24 +222,29 @@ export function HeroCarousel({ items }: { items: HeroSlide[] }) {
           </div>
 
           {/* Setas */}
-          <div className="pointer-events-auto absolute right-4 bottom-4 flex gap-1.5 sm:right-6 sm:bottom-6">
-            <button
+          <Pagination
+            aria-label="Navegar entre destaques"
+            className="dark pointer-events-auto absolute right-4 bottom-4 gap-1.5 sm:right-6 sm:bottom-6"
+          >
+            <PaginationItem
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => move(-1)}
               aria-label="Notícia anterior"
-              className="grid h-8 w-8 place-items-center border border-cream/25 text-cream/70 transition-colors hover:border-cream/60 hover:text-cream"
             >
-              <Arrow flip />
-            </button>
-            <button
+              <ChevronLeft className="h-4 w-4" aria-hidden />
+            </PaginationItem>
+            <PaginationItem
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => move(1)}
               aria-label="Próxima notícia"
-              className="grid h-8 w-8 place-items-center border border-cream/25 text-cream/70 transition-colors hover:border-cream/60 hover:text-cream"
             >
-              <Arrow />
-            </button>
-          </div>
+              <ChevronRight className="h-4 w-4" aria-hidden />
+            </PaginationItem>
+          </Pagination>
         </div>
       ) : null}
     </div>

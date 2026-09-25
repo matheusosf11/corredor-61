@@ -166,6 +166,32 @@
   flex-shrink: 0;
 }
 
+/* Cartões do header transparente das matérias (OverlayHeader) */
+.overlay-nav-cards .nav-card {
+  min-height: 132px;
+}
+
+.overlay-nav-cards .nav-card-label,
+.overlay-nav-cards .nav-card-link {
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+}
+
+@media (min-width: 1280px) {
+  .overlay-nav-cards .nav-card-label,
+  .overlay-nav-cards .nav-card-link {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .overlay-nav-cards .nav-card-label,
+  .overlay-nav-cards .nav-card-link {
+    font-size: 15px;
+    letter-spacing: 0.12em;
+  }
+}
+
 @media (max-width: 767px) {
   .card-nav-container {
     display: none;

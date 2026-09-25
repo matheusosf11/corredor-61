@@ -21,6 +21,7 @@ export const authorType = defineType({
     defineField({
       name: "photo",
       title: "Foto",
+      description: "Aparece no artigo, em Autores e na coluna da home.",
       type: "image",
       options: { hotspot: true },
     }),

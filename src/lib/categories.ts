@@ -12,5 +12,15 @@ export function getCategory(slug: string) {
 }
 
 export function isCategorySlug(value: string): value is CategorySlug {
-  return categories.some((category) => category.slug === value);
+  return Boolean(value);
+}
+
+export function categoryLabel(
+  slug?: string,
+  name?: string,
+  fallback = "",
+) {
+  if (name && name !== slug) return name;
+  if (!slug) return fallback;
+  return getCategory(slug)?.name ?? name ?? fallback;
 }

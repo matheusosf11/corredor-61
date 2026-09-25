@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { RevealHeading } from "@/components/motion/RevealHeading";
 import { AuthorMark } from "@/components/ui/AuthorMark";
 import { formatDate } from "@/lib/format";
 import {
@@ -45,9 +46,9 @@ export default async function AutorPage({ params }: Props) {
           <span className="nav-link mb-2.5 block text-[10px] text-gold">
             {author.active ? "Colunista" : "Arquivo"}
           </span>
-          <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.02em] text-cream md:text-[36px]">
+          <RevealHeading className="text-[28px] leading-tight font-extrabold tracking-[-0.02em] text-cream md:text-[36px]">
             {author.name}
-          </h1>
+          </RevealHeading>
           <p className="nav-link mt-2 text-[12px] text-cream/60">
             {author.role}
           </p>

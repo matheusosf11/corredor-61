@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { RevealHeading } from "@/components/motion/RevealHeading";
 import { AuthorMark } from "@/components/ui/AuthorMark";
 import { formatDate, readingMinutes } from "@/lib/format";
-import { getCategory } from "@/lib/categories";
+import { categoryLabel } from "@/lib/categories";
 import {
   getActiveAuthors,
   getAllAuthors,
@@ -37,7 +38,7 @@ export default async function ArtigosPage() {
       dek: article.dek,
       cover: article.cover,
       category: article.category
-        ? (getCategory(article.category)?.name ?? "Opinião")
+        ? categoryLabel(article.category, article.categoryName, "Opinião")
         : "Opinião",
       authorName: author?.name ?? "Corredor 61",
       authorInitials: author?.initials ?? "C61",
@@ -53,9 +54,9 @@ export default async function ArtigosPage() {
       <div className="pad-x border-b border-navy/12 bg-cream pt-11 pb-9">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-[34px] leading-none font-extrabold tracking-[-0.03em] text-navy md:text-[44px]">
+            <RevealHeading className="text-[34px] leading-none font-extrabold tracking-[-0.03em] text-navy md:text-[44px]">
               Artigos
-            </h1>
+            </RevealHeading>
             <p className="mt-2 max-w-[52ch] font-serif text-[15px] leading-snug text-navy/65">
               Análises assinadas por quem atua no debate institucional
               brasileiro.
@@ -68,7 +69,7 @@ export default async function ArtigosPage() {
             Ver colunistas
           </Link>
         </div>
-        <div className="flex gap-5 overflow-x-auto border-t border-navy/15 pt-5">
+        <div className="flex gap-5 overflow-x-auto border-t border-navy/15 pt-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {authors.map((author) => (
             <Link
               key={author.slug}

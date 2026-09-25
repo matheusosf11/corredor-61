@@ -46,9 +46,13 @@ export const places: Place[] = [
 ];
 
 export const placeOptions = places.map((place) => ({
-  title: place.name,
+  title: `${place.name} (${place.href})`,
   value: place.slug,
 }));
+
+export function placeName(slug: string | undefined) {
+  return places.find((place) => place.slug === slug)?.name ?? slug ?? "";
+}
 
 /** Cobertura de demonstração, enquanto o CMS não marca a praça. */
 export const seedNewsPlaces: Record<string, PlaceSlug> = {

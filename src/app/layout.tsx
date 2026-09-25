@@ -7,6 +7,7 @@ import {
 } from "@/components/intro/introState";
 import { Footer } from "@/components/layout/Footer";
 import { SiteChrome } from "@/components/layout/SiteChrome";
+import { getCategories } from "@/lib/queries";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -31,7 +32,10 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "http://localhost:3000"),
   ),
   title: {
     default: `${site.name} — ${site.tagline}`,
@@ -51,7 +55,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const categories = await getCategories();
   return (
     <html
       lang="pt-BR"
@@ -63,7 +68,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: introInlineScript }} />
       </head>
       <body className="min-h-full">
-        <SiteChrome footer={<Footer />}>{children}</SiteChrome>
+        <SiteChrome categories={categories} footer={<Footer />}>
+          {children}
+        </SiteChrome>
         <IntroPreloader />
       </body>
     </html>

@@ -1,9 +1,16 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
+function isAuthorized(request: NextRequest) {
+  const expected = process.env.SANITY_REVALIDATE_SECRET;
+  if (!expected) return false;
+  const fromQuery = request.nextUrl.searchParams.get("secret");
+  const fromHeader = request.headers.get("x-webhook-secret");
+  return fromQuery === expected || fromHeader === expected;
+}
+
 export async function POST(request: NextRequest) {
-  const secret = request.nextUrl.searchParams.get("secret");
-  if (!process.env.SANITY_REVALIDATE_SECRET || secret !== process.env.SANITY_REVALIDATE_SECRET) {
+  if (!isAuthorized(request)) {
     return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
   }
 

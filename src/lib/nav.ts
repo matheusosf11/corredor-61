@@ -1,4 +1,5 @@
 import { cities } from "./places";
+import type { Category } from "./types";
 
 export type NavChild = {
   href: string;
@@ -97,18 +98,52 @@ export const primaryNav: NavItem[] = [
   {
     href: "/sobre",
     label: "Portal",
-    match: ["/sobre", "/apoiadores"],
+    match: ["/sobre"],
     groups: [
       {
         heading: "Institucional",
-        items: [
-          { href: "/sobre", label: "Sobre nós" },
-          { href: "/apoiadores", label: "Apoiadores" },
-        ],
+        items: [{ href: "/sobre", label: "Sobre nós" }],
       },
     ],
   },
 ];
+
+function newsThemeItems(cats: Category[]): NavChild[] {
+  return [
+    { href: "/noticias", label: "Todas" },
+    ...cats.map((category) => ({
+      href: `/noticias?categoria=${category.slug}`,
+      label: category.name,
+    })),
+  ];
+}
+
+export function buildPrimaryNav(cats: Category[]): NavItem[] {
+  return primaryNav.map((item) => {
+    if (item.href !== "/noticias") return item;
+    return {
+      ...item,
+      groups: [{ heading: "Por tema", items: newsThemeItems(cats) }],
+    };
+  });
+}
+
+export function buildCardNavItems(cats: Category[]) {
+  return cardNavItems.map((item) => {
+    if (item.label !== "Notícias") return item;
+    return {
+      ...item,
+      links: [
+        { label: "Todas", href: "/noticias", ariaLabel: "Todas as notícias" },
+        ...cats.map((category) => ({
+          label: category.name,
+          href: `/noticias?categoria=${category.slug}`,
+          ariaLabel: `Notícias de ${category.name}`,
+        })),
+      ],
+    };
+  });
+}
 
 export function navItemIsActive(item: NavItem, pathname: string) {
   const bases = item.match ?? [item.href];
@@ -204,7 +239,6 @@ export const cardNavItems = [
     textColor: "#f4f0e4",
     links: [
       { label: "Sobre nós", href: "/sobre", ariaLabel: "Sobre o Corredor 61" },
-      { label: "Apoiadores", href: "/apoiadores", ariaLabel: "Apoiadores" },
       {
         label: "Instagram",
         href: "https://www.instagram.com/corredor61.br",

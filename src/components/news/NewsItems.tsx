@@ -5,12 +5,12 @@ import {
   formatFullDate,
   formatTime,
 } from "@/lib/format";
-import { getCategory } from "@/lib/categories";
+import { categoryLabel } from "@/lib/categories";
 import type { News } from "@/lib/types";
 import { CoverMedia } from "@/components/ui/CoverMedia";
 
 function catName(item: News) {
-  return getCategory(item.category)?.name ?? "";
+  return categoryLabel(item.category, item.categoryName);
 }
 
 /** Cartão de notícia com imagem no topo — grade da home. */

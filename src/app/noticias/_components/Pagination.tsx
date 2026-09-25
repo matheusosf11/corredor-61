@@ -1,4 +1,11 @@
-import Link from "next/link";
+import {
+  Pagination as PaginationRoot,
+  PaginationEllipsis,
+  PaginationLink,
+  PaginationNextLink,
+  PaginationPreviousLink,
+} from "@/components/ui/pagination";
+import { getVisiblePages } from "@/lib/pagination";
 
 type Props = {
   page: number;
@@ -6,9 +13,6 @@ type Props = {
   hrefFor: (page: number) => string;
   onDark?: boolean;
 };
-
-const type =
-  "inline-flex items-center justify-center font-sans text-[12.5px] leading-none font-bold tracking-[0.15em] uppercase transition-colors";
 
 export function Pagination({
   page,
@@ -18,64 +22,41 @@ export function Pagination({
 }: Props) {
   if (totalPages <= 1) return null;
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-  const box = onDark
-    ? "border-cream/30 text-cream/80 hover:border-gold hover:text-gold"
-    : "border-navy/25 text-navy/70 hover:border-gold-ink hover:text-gold-ink";
-  const boxOff = onDark
-    ? "border-cream/15 text-cream/30"
-    : "border-navy/12 text-navy/30";
-  const boxActive = onDark
-    ? "border-gold bg-gold text-navy"
-    : "border-gold-ink bg-gold text-navy";
-
-  const cell = `${type} relative h-8 -ml-px border px-3 first:ml-0`;
-
   return (
-    <nav
+    <PaginationRoot
       aria-label="Paginação"
-      className="mt-12 flex items-center justify-center"
+      className={`mt-12 flex-wrap ${onDark ? "dark" : ""}`}
     >
-      {page > 1 ? (
-        <Link href={hrefFor(page - 1)} className={`${cell} ${box}`}>
-          ← Anterior
-        </Link>
-      ) : (
-        <span className={`${cell} ${boxOff}`} aria-hidden>
-          ← Anterior
-        </span>
-      )}
+      <PaginationPreviousLink
+        href={page > 1 ? hrefFor(page - 1) : undefined}
+        aria-label="Página anterior"
+        className="px-2 sm:px-3"
+      >
+        <span className="hidden sm:inline">Anterior</span>
+      </PaginationPreviousLink>
 
-      {pages.map((n) =>
-        n === page ? (
-          <span
-            key={n}
-            aria-current="page"
-            className={`${cell} min-w-8 ${boxActive}`}
-          >
-            {n}
-          </span>
+      {getVisiblePages(page, totalPages).map((n, i) =>
+        n === "..." ? (
+          <PaginationEllipsis key={`ellipsis-${i}`} />
         ) : (
-          <Link
+          <PaginationLink
             key={n}
             href={hrefFor(n)}
-            className={`${cell} min-w-8 ${box}`}
+            isActive={n === page}
+            aria-label={`Página ${n}`}
           >
             {n}
-          </Link>
+          </PaginationLink>
         ),
       )}
 
-      {page < totalPages ? (
-        <Link href={hrefFor(page + 1)} className={`${cell} ${box}`}>
-          Próxima →
-        </Link>
-      ) : (
-        <span className={`${cell} ${boxOff}`} aria-hidden>
-          Próxima →
-        </span>
-      )}
-    </nav>
+      <PaginationNextLink
+        href={page < totalPages ? hrefFor(page + 1) : undefined}
+        aria-label="Próxima página"
+        className="px-2 sm:px-3"
+      >
+        <span className="hidden sm:inline">Próxima</span>
+      </PaginationNextLink>
+    </PaginationRoot>
   );
 }

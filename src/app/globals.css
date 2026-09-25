@@ -18,6 +18,77 @@
   --font-sans: var(--font-archivo);
   --font-serif: var(--font-source-serif);
   --font-mono: var(--font-plex-mono);
+
+  /* Tokens semânticos dos componentes em components/ui (shadcn) */
+  --color-background: hsl(var(--hu-background));
+  --color-foreground: hsl(var(--hu-foreground));
+  --color-card: hsl(var(--hu-card));
+  --color-card-foreground: hsl(var(--hu-card-foreground));
+  --color-primary: hsl(var(--hu-primary));
+  --color-primary-foreground: hsl(var(--hu-primary-foreground));
+  --color-secondary: hsl(var(--hu-secondary));
+  --color-secondary-foreground: hsl(var(--hu-secondary-foreground));
+  --color-muted: hsl(var(--hu-muted));
+  --color-muted-foreground: hsl(var(--hu-muted-foreground));
+  --color-accent: hsl(var(--hu-accent));
+  --color-accent-foreground: hsl(var(--hu-accent-foreground));
+  --color-destructive: hsl(var(--hu-destructive));
+  --color-destructive-foreground: hsl(var(--hu-destructive-foreground));
+  --color-border: hsl(var(--hu-border));
+  --color-input: hsl(var(--hu-input));
+  --color-ring: hsl(var(--hu-ring));
+  --radius-ele: var(--radius);
+
+  --animate-tab-expand: tab-expand 0.35s ease-out backwards;
+
+  @keyframes tab-expand {
+    from {
+      flex-grow: 0.7;
+      opacity: 0;
+    }
+  }
+}
+
+/* Paleta da marca em HSL — .dark vale para trechos sobre fundo marinho */
+:root {
+  --radius: 2px;
+  --hu-background: 48, 71%, 98%;
+  --hu-foreground: 219, 58%, 15%;
+  --hu-card: 0, 0%, 100%;
+  --hu-card-foreground: 219, 58%, 15%;
+  --hu-primary: 42, 55%, 53%;
+  --hu-primary-foreground: 219, 58%, 15%;
+  --hu-secondary: 45, 42%, 93%;
+  --hu-secondary-foreground: 219, 58%, 15%;
+  --hu-muted: 45, 42%, 93%;
+  --hu-muted-foreground: 219, 15%, 45%;
+  --hu-accent: 45, 42%, 93%;
+  --hu-accent-foreground: 219, 58%, 15%;
+  --hu-destructive: 9, 96%, 47%;
+  --hu-destructive-foreground: 0, 0%, 98%;
+  --hu-border: 44, 21%, 83%;
+  --hu-input: 0, 0%, 100%;
+  --hu-ring: 42, 55%, 53%;
+}
+
+.dark {
+  --hu-background: 222, 61%, 12%;
+  --hu-foreground: 45, 42%, 93%;
+  --hu-card: 219, 58%, 15%;
+  --hu-card-foreground: 45, 42%, 93%;
+  --hu-primary: 42, 55%, 53%;
+  --hu-primary-foreground: 219, 58%, 15%;
+  --hu-secondary: 219, 45%, 20%;
+  --hu-secondary-foreground: 45, 42%, 93%;
+  --hu-muted: 219, 45%, 20%;
+  --hu-muted-foreground: 45, 20%, 70%;
+  --hu-accent: 45, 42%, 93%, 12%;
+  --hu-accent-foreground: 45, 42%, 93%;
+  --hu-destructive: 0, 84%, 50%;
+  --hu-destructive-foreground: 0, 0%, 98%;
+  --hu-border: 45, 42%, 93%, 25%;
+  --hu-input: 45, 42%, 93%, 5%;
+  --hu-ring: 42, 55%, 53%;
 }
 
 @layer base {
@@ -189,5 +260,231 @@
     #15181e 0 14px,
     #1d2129 14px 28px
   );
+}
+
+/* Tabs sliding — transitions.dev
+   Tokens da marca no menu mobile (barra marinho + pílula azul clara). */
+:root {
+  --tabs-dur: 250ms;
+  --tabs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tabs-text-muted: rgba(244, 240, 228, 0.68);
+  --tabs-text-active: #f4f0e4;
+  --tabs-bar-bg: #0b1730;
+  --tabs-pill-bg: color-mix(in hsl, #0b1730 84%, white);
+}
+
+/* The bar is just a flex container with padding for the pill
+   to sit inside. Tabs sit on z-index: 1, the pill on z-index: 0,
+   so labels read above the pill background. */
+.t-tabs {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 48px;
+  background: var(--tabs-bar-bg);
+}
+.t-tab {
+  position: relative;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  height: 30px;
+  padding: 4px 12px;
+  color: var(--tabs-text-muted);
+  cursor: pointer;
+  border-radius: 48px;
+  z-index: 1;
+  transition: color var(--tabs-dur) var(--tabs-ease);
+}
+.t-tab:not([aria-selected="true"]):hover,
+.t-tab[aria-selected="true"] {
+  color: var(--tabs-text-active);
+}
+
+/* The pill: width + transform are written inline by JS so
+   the transition tweens between the previous and next
+   measured positions. */
+.t-tabs-pill {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: 30px;
+  width: 0;
+  background: var(--tabs-pill-bg);
+  border-radius: 48px;
+  transform: translateX(0);
+  transition:
+    transform var(--tabs-dur) var(--tabs-ease),
+    width     var(--tabs-dur) var(--tabs-ease),
+    background-color var(--tabs-dur) var(--tabs-ease);
+  will-change: transform, width;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-tabs-pill, .t-tab, .mobile-tabbar.t-tabs { transition: none !important; }
+}
+
+/* Menu mobile: mesma transição, em faixa larga com ícone + rótulo.
+   Só no celular — o CSS sem camada ganha do `md:hidden` do Tailwind. */
+.mobile-tabbar.t-tabs {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-tabbar.t-tabs {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    gap: 0;
+    padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+    border-radius: 0;
+    border-top: 1px solid rgba(244, 240, 228, 0.15);
+    transition:
+      background-color var(--tabs-dur) var(--tabs-ease),
+      border-color var(--tabs-dur) var(--tabs-ease);
+  }
+  .mobile-tabbar.is-light {
+    --tabs-bar-bg: #f4f0e4;
+    --tabs-text-muted: rgba(11, 23, 48, 0.52);
+    --tabs-text-active: #f4f0e4;
+    --tabs-pill-bg: #0b1730;
+    border-top-color: rgba(11, 23, 48, 0.12);
+  }
+  .mobile-tabbar .t-tab {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 52px;
+    padding: 6px 4px;
+    text-decoration: none;
+  }
+  .mobile-tabbar .t-tab span {
+    font-family: var(--font-sans), "Segoe UI", sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mobile-tabbar .t-tabs-pill {
+    top: 4px;
+    height: 52px;
+  }
+}
+
+/* Menu mobile — panel reveal + texts reveal (transitions.dev)
+   Painel entra da direita; itens sobem em stagger, como no vídeo. */
+:root {
+  --panel-open-dur: 400ms;
+  --panel-close-dur: 350ms;
+  --panel-translate-x: 28px;
+  --panel-blur: 2px;
+  --panel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --stagger-dur: 500ms;
+  --stagger-distance: 12px;
+  --stagger-stagger: 40ms;
+  --stagger-blur: 3px;
+  --stagger-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --construct-dur: 520ms;
+  --construct-stagger: 48ms;
+  --construct-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mobile-menu-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--panel-close-dur) var(--panel-ease);
+}
+.mobile-menu-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: var(--panel-open-dur);
+}
+
+.mobile-menu-panel {
+  transform: translateX(var(--panel-translate-x));
+  opacity: 0;
+  filter: blur(var(--panel-blur));
+  pointer-events: none;
+  transition:
+    transform var(--panel-close-dur) var(--panel-ease),
+    opacity var(--panel-close-dur) var(--panel-ease),
+    filter var(--panel-close-dur) var(--panel-ease);
+  will-change: transform, opacity, filter;
+}
+.mobile-menu-panel.is-open {
+  transform: translateX(0);
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transition-duration: var(--panel-open-dur);
+}
+
+.t-stagger-line {
+  display: block;
+  opacity: 0;
+  transform: translateY(var(--stagger-distance));
+  filter: blur(var(--stagger-blur));
+  transition:
+    opacity var(--stagger-dur) var(--stagger-ease),
+    transform var(--stagger-dur) var(--stagger-ease),
+    filter var(--stagger-dur) var(--stagger-ease);
+  transition-delay: calc(var(--stagger-stagger) * var(--stagger-i, 0));
+  will-change: transform, opacity, filter;
+}
+
+.mobile-menu-panel.is-open .t-stagger-line {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.mobile-menu-panel:not(.is-open) .t-stagger-line {
+  transition:
+    opacity 200ms ease,
+    transform 0s linear,
+    filter 0s linear;
+  transition-delay: 0s;
+}
+
+/* Página se constrói: palavras sobem de uma máscara, blocos entram em stagger. */
+@media (prefers-reduced-motion: no-preference) {
+  .page-construct:not([data-ready]) {
+    opacity: 0;
+  }
+}
+.t-construct-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.t-construct-word-inner {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-backdrop,
+  .mobile-menu-panel,
+  .t-stagger-line {
+    transition: none !important;
+  }
+  .mobile-menu-panel {
+    transform: none;
+    filter: none;
+  }
+  .t-construct-word-inner {
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
 }
 

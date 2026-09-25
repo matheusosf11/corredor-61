@@ -2,22 +2,23 @@ import Link from "next/link";
 import { InstagramPostCard } from "@/components/instagram/InstagramPostCard";
 import { NewsCard } from "@/components/news/NewsItems";
 import { formatDate } from "@/lib/format";
-import { getCategory } from "@/lib/categories";
-import { instagramPosts } from "@/lib/instagramPosts";
+import { categoryLabel } from "@/lib/categories";
 import {
   getAllAuthors,
   getHomeArticles,
   getHomeHeroNews,
   getHomeNewsGrid,
+  getInstagramPosts,
 } from "@/lib/queries";
 import { ArtigosList } from "./_components/ArtigosList";
 import { HeroCarousel } from "./_components/HeroCarousel";
 
 export default async function HomePage() {
-  const [heroNews, articles, authors] = await Promise.all([
+  const [heroNews, articles, authors, posts] = await Promise.all([
     getHomeHeroNews(5),
     getHomeArticles(8),
     getAllAuthors(),
+    getInstagramPosts(),
   ]);
   const featured = heroNews[0];
   const grid = featured ? await getHomeNewsGrid(featured.slug, 10) : [];
@@ -38,7 +39,7 @@ export default async function HomePage() {
     title: item.title,
     dek: item.dek,
     cover: item.cover,
-    categoryName: getCategory(item.category)?.name ?? "",
+    categoryName: categoryLabel(item.category, item.categoryName),
     authorName: item.authorName,
     dateLabel: formatDate(item.publishedAt),
   }));
@@ -120,7 +121,7 @@ export default async function HomePage() {
           </Link>
         </div>
         <ul className="grid gap-x-8 gap-y-11 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-          {instagramPosts.slice(0, 3).map((post) => (
+          {posts.slice(0, 3).map((post) => (
             <li key={post.href}>
               <InstagramPostCard post={post} variant="news" />
             </li>

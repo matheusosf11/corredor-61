@@ -1,9 +1,14 @@
 const live = `defined(publishedAt) && publishedAt <= now()`;
 
+const categoryFields = `
+  "category": coalesce(category->slug.current, category),
+  "categoryName": coalesce(category->name, category)
+`;
+
 const cover = `
   "cover": {
     "alt": coalesce(cover.alt, title),
-    "motif": coalesce(category, "institucional"),
+    "motif": coalesce(category->slug.current, "institucional"),
     "image": cover.asset->url
   }
 `;
@@ -15,7 +20,7 @@ export const newsQuery = `*[_type == "news" && defined(slug.current) && ${live}]
   body,
   ${cover},
   authorName,
-  category,
+  ${categoryFields},
   place,
   publishedAt,
   "status": "published",
@@ -29,7 +34,7 @@ export const newsBySlugQuery = `*[_type == "news" && slug.current == $slug && ${
   body,
   ${cover},
   authorName,
-  category,
+  ${categoryFields},
   place,
   publishedAt,
   "status": "published",
@@ -43,7 +48,7 @@ export const articlesQuery = `*[_type == "article" && defined(slug.current) && d
   body,
   ${cover},
   "authorSlug": author->slug.current,
-  category,
+  ${categoryFields},
   publishedAt,
   "status": "published"
 }`;
@@ -55,9 +60,14 @@ export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug
   body,
   ${cover},
   "authorSlug": author->slug.current,
-  category,
+  ${categoryFields},
   publishedAt,
   "status": "published"
+}`;
+
+export const categoriesQuery = `*[_type == "category" && defined(slug.current) && active != false] | order(order asc, name asc) {
+  "slug": slug.current,
+  name
 }`;
 
 export const authorsQuery = `*[_type == "author" && defined(slug.current)] | order(name asc) {
@@ -82,13 +92,22 @@ export const supportersQuery = `*[_type == "supporter" && active == true] | orde
 export const aboutQuery = `*[_type == "about" && _id == "about"][0] {
   title,
   proposal,
+  intro,
   objectives,
+  whoMakes,
   people[] {
     name,
     role,
     bio,
     "photoUrl": photo.asset->url
   }
+}`;
+
+export const videosQuery = `*[_type == "video" && defined(href)] | order(order asc, publishedAt desc) {
+  title,
+  href,
+  "cover": cover.asset->url,
+  "coverAlt": coalesce(cover.alt, title)
 }`;
 
 export const searchQuery = `*[_type in ["news", "article"] && defined(slug.current) && ${live} && (
