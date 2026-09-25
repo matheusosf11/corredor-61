@@ -30,8 +30,18 @@ export default async function ArtigosPage() {
     allAuthors.map((author) => [author.slug, author]),
   );
 
-  const items: CarouselArticle[] = articles.map((article) => {
-    const author = authorsBySlug.get(article.authorSlug);
+  const items: CarouselArticle[] = [...articles]
+    .sort((a, b) => {
+      const aTime = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const bTime = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return bTime - aTime;
+    })
+    .map((article) => {
+    const author = article.authorSlug
+      ? authorsBySlug.get(article.authorSlug)
+      : undefined;
+    const authorName =
+      author?.name ?? article.authorName ?? "Corredor 61";
     return {
       slug: article.slug,
       title: article.title,
@@ -40,10 +50,10 @@ export default async function ArtigosPage() {
       category: article.category
         ? categoryLabel(article.category, article.categoryName, "Opinião")
         : "Opinião",
-      authorName: author?.name ?? "Corredor 61",
+      authorName,
       authorInitials: author?.initials ?? "C61",
-      authorPhotoUrl: author?.photoUrl,
-      dateLabel: formatDate(article.publishedAt),
+      authorPhotoUrl: author?.photoUrl ?? article.authorPhotoUrl,
+      dateLabel: article.publishedAt ? formatDate(article.publishedAt) : "",
       minutes: readingMinutes(article.body),
     };
   });
@@ -91,7 +101,13 @@ export default async function ArtigosPage() {
       </div>
 
       <div className="pad-x pt-11 pb-8">
-        <ArticleCarousel articles={items} />
+        {items.length === 0 ? (
+          <p className="py-10 font-serif text-[15px] text-navy/60">
+            O primeiro artigo publicado no estúdio aparece aqui.
+          </p>
+        ) : (
+          <ArticleCarousel articles={items} />
+        )}
       </div>
     </div>
   );

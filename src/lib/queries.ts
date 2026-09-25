@@ -77,12 +77,14 @@ function withArticleCover(item: Article, index: number): Article {
   const offset = Math.floor(DEMO_IMAGES.length / 2);
   return {
     ...item,
+    authorSlug: item.authorSlug ?? "",
     categoryName: item.category
       ? categoryLabel(item.category, item.categoryName, "Opinião")
       : "Opinião",
     cover: {
-      ...item.cover,
-      image: item.cover.image ?? demoImageAt(index + offset),
+      alt: item.cover?.alt ?? item.title,
+      motif: item.cover?.motif ?? "opiniao",
+      image: item.cover?.image ?? demoImageAt(index + offset),
     },
   };
 }
@@ -214,11 +216,19 @@ export async function getAuthorBySlug(slug: string): Promise<Author | null> {
 }
 
 export async function getAuthor(article: Article) {
-  const author = await getAuthorBySlug(article.authorSlug);
-  if (!author) {
-    throw new Error(`Autor não encontrado: ${article.authorSlug}`);
-  }
-  return author;
+  const author = article.authorSlug
+    ? await getAuthorBySlug(article.authorSlug)
+    : null;
+  if (author) return author;
+  return {
+    slug: article.authorSlug || "corredor-61",
+    name: article.authorName || "Corredor 61",
+    role: "",
+    bio: "",
+    initials: initialsFromName(article.authorName || "Corredor 61"),
+    active: true,
+    photoUrl: article.authorPhotoUrl,
+  };
 }
 
 export async function getActiveSupporters(): Promise<Supporter[]> {

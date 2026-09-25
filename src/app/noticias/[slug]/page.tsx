@@ -89,15 +89,6 @@ export default async function NoticiaPage({ params }: Props) {
           <ShareRow title={item.title} />
         </div>
 
-        <figure className="mx-auto mb-11 max-w-[860px]">
-          <div className="aspect-[21/9] w-full">
-            <CoverMedia cover={item.cover} />
-          </div>
-          <figcaption className="mt-2 font-mono text-[10.5px] text-navy/45">
-            {item.cover.alt}
-          </figcaption>
-        </figure>
-
         <div className="mx-auto max-w-[860px]">
           <ArticleBody blocks={item.body} />
         </div>

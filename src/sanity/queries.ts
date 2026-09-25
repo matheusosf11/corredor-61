@@ -41,28 +41,28 @@ export const newsBySlugQuery = `*[_type == "news" && slug.current == $slug && ${
   featured
 }`;
 
-export const articlesQuery = `*[_type == "article" && defined(slug.current) && defined(author) && ${live}] | order(publishedAt desc) {
+const articleLive = `(!defined(publishedAt) || publishedAt <= now())`;
+
+const articleFields = `
   "slug": slug.current,
   title,
   dek,
   body,
   ${cover},
   "authorSlug": author->slug.current,
+  "authorName": author->name,
+  "authorPhotoUrl": author->photo.asset->url,
   ${categoryFields},
   publishedAt,
   "status": "published"
+`;
+
+export const articlesQuery = `*[_type == "article" && defined(slug.current) && ${articleLive}] | order(publishedAt desc) {
+  ${articleFields}
 }`;
 
-export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug && defined(author) && ${live}][0] {
-  "slug": slug.current,
-  title,
-  dek,
-  body,
-  ${cover},
-  "authorSlug": author->slug.current,
-  ${categoryFields},
-  publishedAt,
-  "status": "published"
+export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug && ${articleLive}][0] {
+  ${articleFields}
 }`;
 
 export const categoriesQuery = `*[_type == "category" && defined(slug.current) && active != false] | order(order asc, name asc) {

@@ -39,6 +39,8 @@ export const newsType = defineType({
     defineField({
       name: "body",
       title: "Corpo",
+      description:
+        "Texto da matéria. Use o botão de imagem para inserir e posicionar as fotos no meio do texto.",
       group: "conteudo",
       validation: (rule) => rule.required().min(1),
       ...portableBody,
@@ -92,7 +94,8 @@ export const newsType = defineType({
     defineField({
       name: "cover",
       title: "Imagem de capa",
-      description: "Usada nos cards, no hero da matéria e no preview do WhatsApp.",
+      description:
+        "Só no hero da matéria, nos cards e no preview do WhatsApp. Não se repete no texto. Fotos do corpo entram no campo Corpo.",
       type: "image",
       group: "midia",
       options: { hotspot: true },

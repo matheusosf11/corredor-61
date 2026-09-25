@@ -108,13 +108,21 @@ function Card({ article }: { article: CarouselArticle }) {
 function Slide({ articles }: { articles: CarouselArticle[] }) {
   const [lead, ...rest] = articles;
   return (
-    <div className="grid w-full gap-7 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-stretch 2xl:grid-cols-[minmax(0,440px)_1fr]">
+    <div
+      className={
+        rest.length
+          ? "grid w-full gap-7 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-stretch 2xl:grid-cols-[minmax(0,440px)_1fr]"
+          : "grid w-full"
+      }
+    >
       <FeaturedCard article={lead} />
-      <div className="grid gap-7 sm:grid-cols-2 lg:h-full lg:grid-rows-3 2xl:grid-cols-3 2xl:grid-rows-2">
-        {rest.map((article) => (
-          <Card key={article.slug} article={article} />
-        ))}
-      </div>
+      {rest.length ? (
+        <div className="grid gap-7 sm:grid-cols-2 lg:h-full lg:grid-rows-3 2xl:grid-cols-3 2xl:grid-rows-2">
+          {rest.map((article) => (
+            <Card key={article.slug} article={article} />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -133,6 +141,12 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
   const [index, setIndex] = useState(hasLoop ? 1 : 0);
   const [animating, setAnimating] = useState(true);
   const busy = useRef(false);
+
+  useEffect(() => {
+    busy.current = false;
+    setAnimating(false);
+    setIndex(hasLoop ? 1 : 0);
+  }, [pageCount, hasLoop]);
 
   function move(delta: number) {
     if (!hasLoop || busy.current) return;
@@ -174,7 +188,7 @@ export function ArticleCarousel({ articles }: { articles: CarouselArticle[] }) {
         <div
           className="carousel-track flex"
           style={{
-            transform: `translateX(-${index * 100}%)`,
+            transform: `translateX(-${(hasLoop ? index : 0) * 100}%)`,
             transition: animating
               ? "transform 0.6s cubic-bezier(0.32, 0.72, 0, 1)"
               : "none",

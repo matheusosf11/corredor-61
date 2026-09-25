@@ -205,11 +205,12 @@ export function IntroPreloader() {
         0.98,
       );
 
-      // 5 — assentamento do lockup
+      // 5 — assentamento do lockup (logo pronto, com as duas torres)
       tl.to(logo, { scale: 1, duration: 0.55, ease: "power2.out" }, 1.05);
+      tl.to({}, { duration: 0.35 }, 1.55);
 
       // 6 — íris a partir do ponto de fuga revela a página real
-      tl.addLabel("wipe", 1.6);
+      tl.addLabel("wipe", 1.9);
       tl.call(
         () => {
           measure();

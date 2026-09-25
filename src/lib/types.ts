@@ -57,6 +57,8 @@ export type Article = {
   body: ContentBody;
   cover: Cover;
   authorSlug: string;
+  authorName?: string;
+  authorPhotoUrl?: string;
   category?: CategorySlug;
   categoryName?: string;
   publishedAt: string;

@@ -25,12 +25,14 @@ export default async function HomePage() {
   const authorsBySlug = new Map(authors.map((author) => [author.slug, author]));
 
   const artigoItems = articles.map((item) => {
-    const author = authorsBySlug.get(item.authorSlug);
+    const author = item.authorSlug
+      ? authorsBySlug.get(item.authorSlug)
+      : undefined;
     return {
       slug: item.slug,
       title: item.title,
-      authorName: author?.name ?? "",
-      authorPhotoUrl: author?.photoUrl,
+      authorName: author?.name ?? item.authorName ?? "Corredor 61",
+      authorPhotoUrl: author?.photoUrl ?? item.authorPhotoUrl,
     };
   });
 

@@ -15,6 +15,10 @@ const darkFills: Partial<Record<LogoPathKey, string>> = {
   leftWallMid: CREAM,
   oneSilhouette: NAVY,
   oneFace: CREAM,
+  // Congresso: duas torres brancas no ponto de fuga (fundo da intro é escuro).
+  tower: "#FFFFFF",
+  towerLeft: "#FFFFFF",
+  towerGap: "#001124",
 };
 
 /** Interseção das duas bordas da faixa dourada (floorCream). */
