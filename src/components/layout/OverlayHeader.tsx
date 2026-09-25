@@ -90,13 +90,15 @@ export function OverlayHeader({
             width={34}
             height={34}
             className="h-[30px] w-auto"
+            style={{ width: "auto" }}
           />
           <Image
             src="/wordmark-corredor61.svg"
             alt=""
-            width={120}
-            height={26}
-            className="hidden h-[22px] w-auto lg:block"
+            width={140}
+            height={30}
+            className="hidden h-[30px] w-auto lg:block"
+            style={{ width: "auto" }}
           />
         </Link>
 

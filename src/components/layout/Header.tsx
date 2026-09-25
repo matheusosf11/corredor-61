@@ -213,14 +213,16 @@ function MobileBrand({ onClick }: { onClick?: () => void }) {
         height={44}
         priority
         className="h-[40px] w-auto"
+        style={{ width: "auto" }}
       />
       <Image
         src="/wordmark-corredor61.svg"
         alt={site.name}
-        width={188}
-        height={40}
+        width={206}
+        height={44}
         priority
-        className="h-[32px] w-auto"
+        className="h-[44px] w-auto"
+        style={{ width: "auto" }}
       />
     </Link>
   );
@@ -468,14 +470,16 @@ export function Header({ categories }: { categories: Category[] }) {
               height={84}
               priority
               className="h-[84px] w-auto"
+              style={{ width: "auto" }}
             />
             <Image
               src="/wordmark-corredor61.svg"
               alt={site.name}
-              width={402}
-              height={86}
+              width={514}
+              height={110}
               priority
-              className="h-[86px] w-auto"
+              className="h-[110px] w-auto"
+              style={{ width: "auto" }}
             />
             <span
               aria-hidden
