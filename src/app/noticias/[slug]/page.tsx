@@ -105,7 +105,7 @@ export default async function NoticiaPage({ params }: Props) {
                   href={`/noticias/${n.slug}`}
                   className="group flex flex-col gap-2"
                 >
-                  <div className="h-[110px]">
+                  <div className="h-[220px] md:h-[260px]">
                     <CoverMedia cover={n.cover} />
                   </div>
                   <span className="font-sans text-[10.5px] leading-none font-bold tracking-[0.12em] text-gold-ink uppercase lg:text-[11.5px] lg:tracking-[0.14em]">

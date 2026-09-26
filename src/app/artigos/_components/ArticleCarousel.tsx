@@ -108,13 +108,7 @@ function Card({ article }: { article: CarouselArticle }) {
 function Slide({ articles }: { articles: CarouselArticle[] }) {
   const [lead, ...rest] = articles;
   return (
-    <div
-      className={
-        rest.length
-          ? "grid w-full gap-7 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-stretch 2xl:grid-cols-[minmax(0,440px)_1fr]"
-          : "grid w-full"
-      }
-    >
+    <div className="grid w-full gap-7 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-stretch 2xl:grid-cols-[minmax(0,440px)_1fr]">
       <FeaturedCard article={lead} />
       {rest.length ? (
         <div className="grid gap-7 sm:grid-cols-2 lg:h-full lg:grid-rows-3 2xl:grid-cols-3 2xl:grid-rows-2">
