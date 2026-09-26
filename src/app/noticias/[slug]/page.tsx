@@ -47,7 +47,7 @@ export default async function NoticiaPage({ params }: Props) {
   return (
     <article>
       {/* Hero — ocupa a primeira dobra, com o header transparente por cima */}
-      <header className="relative flex min-h-[78svh] items-end overflow-hidden md:min-h-[max(620px,92svh)]">
+      <header className="relative flex min-h-[42svh] items-end overflow-hidden md:min-h-[max(620px,92svh)]">
         <CoverMedia
           cover={item.cover}
           variant="hero-dark"

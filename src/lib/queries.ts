@@ -1,9 +1,8 @@
-import { about, articles, authors, news, supporters } from "./data";
-import { DEMO_IMAGES, demoImageAt } from "./demo-images";
+import { about } from "./data";
 import { bodyToText, initialsFromName } from "./format";
 import { categories, categoryLabel, getCategory } from "./categories";
-import { instagramPosts, type InstagramPost } from "./instagramPosts";
-import { seedNewsPlaces, type PlaceSlug } from "./places";
+import type { InstagramPost } from "./instagramPosts";
+import type { PlaceSlug } from "./places";
 import type {
   AboutContent,
   Article,
@@ -42,17 +41,6 @@ const NEWS_PAGE_SIZE = 9;
 const ARTICLE_PAGE_SIZE = 9;
 const fetchOpts = { next: { revalidate: 60, tags: ["sanity"] as string[] } };
 
-function isLive(item: { status: string; publishedAt: string }) {
-  return (
-    item.status === "published" &&
-    new Date(item.publishedAt).getTime() <= Date.now()
-  );
-}
-
-function byDateDesc<T extends { publishedAt: string }>(a: T, b: T) {
-  return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-}
-
 async function cmsFetch<T>(
   query: string,
   params: Record<string, unknown> = {},
@@ -65,16 +53,19 @@ async function cmsFetch<T>(
   }
 }
 
-function withCover(item: News, index: number): News {
+function withCover(item: News): News {
   return {
     ...item,
     categoryName: categoryLabel(item.category, item.categoryName),
-    cover: { ...item.cover, image: item.cover.image ?? demoImageAt(index) },
+    cover: {
+      alt: item.cover?.alt ?? item.title,
+      motif: item.cover?.motif ?? item.category,
+      image: item.cover?.image,
+    },
   };
 }
 
-function withArticleCover(item: Article, index: number): Article {
-  const offset = Math.floor(DEMO_IMAGES.length / 2);
+function withArticleCover(item: Article): Article {
   return {
     ...item,
     authorSlug: item.authorSlug ?? "",
@@ -84,7 +75,7 @@ function withArticleCover(item: Article, index: number): Article {
     cover: {
       alt: item.cover?.alt ?? item.title,
       motif: item.cover?.motif ?? "opiniao",
-      image: item.cover?.image ?? demoImageAt(index + offset),
+      image: item.cover?.image,
     },
   };
 }
@@ -103,39 +94,15 @@ function hydrateAuthor(
   };
 }
 
-function staticNews(): News[] {
-  return news
-    .filter(isLive)
-    .slice()
-    .sort(byDateDesc)
-    .map((item, index) =>
-      withCover(
-        { ...item, place: item.place ?? seedNewsPlaces[item.slug] },
-        index,
-      ),
-    );
-}
-
-function staticArticles(): Article[] {
-  return articles
-    .filter(isLive)
-    .slice()
-    .sort(byDateDesc)
-    .map((item, index) => withArticleCover(item, index));
-}
-
 export async function getPublishedNews(category?: CategorySlug) {
   const rows = await cmsFetch<News[]>(newsQuery);
-  const list = rows?.length
-    ? rows.map((item, index) => withCover(item, index))
-    : staticNews();
+  const list = (rows ?? []).map((item) => withCover(item));
   return category ? list.filter((item) => item.category === category) : list;
 }
 
 export async function getNewsBySlug(slug: string) {
   const row = await cmsFetch<News | null>(newsBySlugQuery, { slug });
-  if (row) return withCover(row, 0);
-  return staticNews().find((item) => item.slug === slug) ?? null;
+  return row ? withCover(row) : null;
 }
 
 export async function getHomeHeroNews(limit = 5): Promise<News[]> {
@@ -179,16 +146,12 @@ export async function getNewsPage(page: number, category?: CategorySlug) {
 
 export async function getPublishedArticles() {
   const rows = await cmsFetch<Article[]>(articlesQuery);
-  if (rows?.length) {
-    return rows.map((item, index) => withArticleCover(item, index));
-  }
-  return staticArticles();
+  return (rows ?? []).map((item) => withArticleCover(item));
 }
 
 export async function getArticleBySlug(slug: string) {
   const row = await cmsFetch<Article | null>(articleBySlugQuery, { slug });
-  if (row) return withArticleCover(row, 0);
-  return staticArticles().find((item) => item.slug === slug) ?? null;
+  return row ? withArticleCover(row) : null;
 }
 
 export async function getHomeArticles(limit = 5) {
@@ -203,8 +166,7 @@ export async function getArticlesByAuthor(authorSlug: string) {
 
 export async function getAllAuthors() {
   const rows = await cmsFetch<Author[]>(authorsQuery);
-  if (rows?.length) return rows.map(hydrateAuthor);
-  return authors;
+  return (rows ?? []).map(hydrateAuthor);
 }
 
 export async function getActiveAuthors() {
@@ -233,19 +195,12 @@ export async function getAuthor(article: Article) {
 
 export async function getActiveSupporters(): Promise<Supporter[]> {
   const rows = await cmsFetch<Supporter[]>(supportersQuery);
-  if (rows?.length) return rows;
-  return supporters
-    .filter((item) => item.active)
-    .slice()
-    .sort((a, b) => a.order - b.order);
+  return (rows ?? []).filter((item) => item.active !== false);
 }
 
 export async function getInstagramPosts(): Promise<InstagramPost[]> {
   const rows = await cmsFetch<InstagramPost[]>(videosQuery);
-  if (rows?.length) {
-    return rows.filter((row) => row.href && row.cover);
-  }
-  return instagramPosts;
+  return (rows ?? []).filter((row) => row.href && row.cover);
 }
 
 export async function getAbout(): Promise<AboutContent> {

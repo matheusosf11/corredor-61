@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { pickDemoImage } from "./demo-images";
 import type { Cover } from "./types";
 
 export function coverImageUrl(cover: Cover) {
-  return cover.image ?? pickDemoImage(cover.alt);
+  return cover.image ?? "/marca-corredor61.png";
 }
 
 /** Tags og/twitter para o preview no WhatsApp e nas redes. */

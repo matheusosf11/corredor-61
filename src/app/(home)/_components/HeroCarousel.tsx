@@ -39,7 +39,7 @@ function Slide({ item }: { item: HeroSlide }) {
       </div>
       <div
         data-intro-reveal="headline"
-        className="flex flex-col justify-center gap-4 px-6 py-10 sm:px-9"
+        className="flex flex-col justify-center gap-4 px-6 pt-10 pb-16 sm:px-9 sm:py-10"
       >
         <span className="flex items-center gap-2.5">
           <span className="h-0.5 w-6 bg-gold" />
