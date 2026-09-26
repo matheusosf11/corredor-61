@@ -73,7 +73,7 @@ export default async function NoticiaPage({ params }: Props) {
       <ReadingProgress />
 
       {/* Corpo */}
-      <div className="pad-x bg-[#fdfcf8] pb-20 md:pt-4">
+      <div className="pad-x overflow-x-clip bg-[#fdfcf8] pb-20 md:pt-4">
         <div className="mx-auto mb-10 flex max-w-[860px] flex-col gap-4 border-b border-navy/15 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <AuthorMark initials={site.shortName} size={38} />
@@ -89,7 +89,7 @@ export default async function NoticiaPage({ params }: Props) {
           <ShareRow title={item.title} />
         </div>
 
-        <div className="mx-auto max-w-[860px]">
+        <div className="mx-auto w-full min-w-0 max-w-[860px]">
           <ArticleBody blocks={item.body} />
         </div>
 

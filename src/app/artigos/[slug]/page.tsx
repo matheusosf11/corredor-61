@@ -96,7 +96,7 @@ export default async function ArtigoPage({ params }: Props) {
       </header>
 
       {/* Corpo */}
-      <div className="pad-x bg-[#fdfcf8] pt-4 pb-20">
+      <div className="pad-x overflow-x-clip bg-[#fdfcf8] pt-4 pb-20">
         <div className="mx-auto mb-10 flex max-w-[860px] flex-col gap-4 border-b border-navy/15 py-5 sm:flex-row sm:items-center sm:justify-between">
           <span className="font-mono text-[11.5px] text-navy/55">
             Opinião do autor · não reflete posição editorial do portal
@@ -104,7 +104,7 @@ export default async function ArtigoPage({ params }: Props) {
           <ShareRow title={item.title} />
         </div>
 
-        <div className="mx-auto max-w-[860px]">
+        <div className="mx-auto w-full min-w-0 max-w-[860px]">
           <ArticleBody blocks={item.body} />
         </div>
 
